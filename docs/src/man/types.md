@@ -1,29 +1,17 @@
 # Types
 
-## FEM machines
-
-### Linear deformation
+## Working with voxel images
 
 ```@autodocs
-Modules = [FinEtools, FinEtoolsDeforLinear.DeforModelRedModule, FinEtoolsDeforLinear.FEMMDeforLinearBaseModule, FinEtoolsDeforLinear.FEMMDeforLinearModule, FinEtoolsDeforLinear.FEMMDeforWinklerModule, FinEtoolsDeforLinear.FEMMDeforLinearMSModule, FinEtoolsDeforLinear.FEMMDeforSurfaceDampingModule, FinEtoolsDeforLinear.FEMMDeforLinearNICEModule, FinEtoolsDeforLinear.FEMMDeforLinearESNICEModule]
+Modules = [FinEtools, FinEtoolsVoxelMesher.VoxelBoxModule]
 Private = true
 Order = [:type]
 ```
 
-## Material models
-
-### Material for deformation, base functionality
+## Meshing and remeshing
 
 ```@autodocs
-Modules = [FinEtools, FinEtoolsDeforLinear.MatDeforModule]
-Private = true
-Order = [:type]
-```
-
-### Material models for elasticity
-
-```@autodocs
-Modules = [FinEtools, FinEtoolsDeforLinear.MatDeforLinearElasticModule, FinEtoolsDeforLinear.MatDeforElastIsoModule, FinEtoolsDeforLinear.MatDeforElastOrthoModule,]
+Modules = [FinEtools, FinEtoolsVoxelMesher.VoxelTetMeshingModule, FinEtoolsVoxelMesher.TetRemeshingModule]
 Private = true
 Order = [:type]
 ```
