@@ -97,27 +97,27 @@ Coarsen a T4 (tetrahedral) mesh.
 - `tmid` = tetrahedron material identifiers, one per tetrahedron in each row
 - Keyword arguments:
     + `bv`=array for all vertices in the input array v.
-           Is the vertex on the boundary? True or false. The boundary vertices
-           are in layer 1. The vertex layer numbers increase away from
-           the boundary,  and the bigger the vertex layer number the bigger
-           the mesh size.
-       + `desired_ts`=mesh size desired for vertices in layer 1, here mesh size is
-           the length of an edge
-       + `stretch`=the mesh size should increase by this much within one layer of
-            elements, default is 1.25
-       + `nblayer`=number of boundary layers where the mesh size should not increase,
-            default is 1
-       + `surface_coarsening` = is the coarsening intended for the interior or for
-           the surface? default is false, which means the default
-           is coarsening of the interior.
-       + `preserve_thin`= when coarsening the surface, should features which are  thin
-           be unaffected by the coarsening? Here thin means consisting of
-           only "surface" vertices.
-       + `vertex_weight`= weight of vertices, one per  vertex; weight <= 1.0 is ignored,
-           but weight>1.0  is used to "stretch" edges connected  to the vertex.
-           In this way one may preserve certain edges by assigning  larger
-           weight to their vertices. Default is vertex_weight= [] (which means
-           ignore the vertex weights)
+       Is the vertex on the boundary? True or false. The boundary vertices
+       are in layer 1. The vertex layer numbers increase away from
+       the boundary,  and the bigger the vertex layer number the bigger
+       the mesh size.
+    + `desired_ts`=mesh size desired for vertices in layer 1, here mesh size is
+       the length of an edge
+    + `stretch`=the mesh size should increase by this much within one layer of
+        elements, default is 1.25
+    + `nblayer`=number of boundary layers where the mesh size should not increase,
+        default is 1
+    + `surface_coarsening` = is the coarsening intended for the interior or for
+       the surface? default is false, which means the default
+       is coarsening of the interior.
+    + `preserve_thin`= when coarsening the surface, should features which are  thin
+       be unaffected by the coarsening? Here thin means consisting of
+       only "surface" vertices.
+    + `vertex_weight`= weight of vertices, one per  vertex; weight <= 1.0 is ignored,
+       but weight>1.0  is used to "stretch" edges connected  to the vertex.
+       In this way one may preserve certain edges by assigning  larger
+       weight to their vertices. Default is vertex_weight= [] (which means
+       ignore the vertex weights)
 
 # Output
 `t`, `v`, `tmid` = new arrays for the coarsened grid
