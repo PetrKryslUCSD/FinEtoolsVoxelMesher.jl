@@ -12,6 +12,6 @@ Order = [:type]
 
 ```@autodocs
 Modules = [FinEtools, FinEtoolsVoxelMesher.VoxelTetMeshingModule, FinEtoolsVoxelMesher.TetRemeshingModule]
-Private = true
+Private = false
 Order = [:type]
 ```
