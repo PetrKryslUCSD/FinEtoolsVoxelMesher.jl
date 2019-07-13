@@ -16,7 +16,7 @@ import LinearAlgebra: norm
 """
     _IntegerBuffer
 
-This data structure is introduced in order to avoid constant allocation/deallocation of integer  arrays.  
+This data structure is introduced in order to avoid constant allocation/deallocation of integer  arrays.
 The buffer is allocated once and then reused  millions of times. The memory is never  released.
 The buffer needs to be accessed  through the methods  below, not directly.
 """
@@ -26,8 +26,8 @@ mutable struct _IntegerBuffer
 end
 
 function push!(b::_IntegerBuffer, i::Int)
-    b.pa = b.pa + 1 
-    b.a[b.pa] = i 
+    b.pa = b.pa + 1
+    b.a[b.pa] = i
     return b
 end
 
@@ -46,12 +46,12 @@ length(b::_IntegerBuffer) = b.pa
 function getindex(b::_IntegerBuffer, i::Int)
     @assert i <= length(b)
     return b.a[i]
-end 
+end
 
 function copyto!(d::_IntegerBuffer, s::_IntegerBuffer)
     @assert length(d.a) == length(s.a)
     empty!(d)
-    @inbounds for i = 1:length(s) # @inbounds 
+    @inbounds for i = 1:length(s) # @inbounds
         push!(d, s.a[i])
     end
     return d
@@ -62,15 +62,15 @@ function tetvtimes6(vi1::FFltVec, vi2::FFltVec, vi3::FFltVec, vi4::FFltVec)
     # @assert size(X, 1) == 4
     # @assert size(X, 2) == 3
     @inbounds let
-        A1 = vi2[1]-vi1[1]; 
-        A2 = vi2[2]-vi1[2]; 
-        A3 = vi2[3]-vi1[3]; 
-        B1 = vi3[1]-vi1[1]; 
-        B2 = vi3[2]-vi1[2]; 
-        B3 = vi3[3]-vi1[3]; 
-        C1 = vi4[1]-vi1[1]; 
-        C2 = vi4[2]-vi1[2]; 
-        C3 = vi4[3]-vi1[3]; 
+        A1 = vi2[1]-vi1[1];
+        A2 = vi2[2]-vi1[2];
+        A3 = vi2[3]-vi1[3];
+        B1 = vi3[1]-vi1[1];
+        B2 = vi3[2]-vi1[2];
+        B3 = vi3[3]-vi1[3];
+        C1 = vi4[1]-vi1[1];
+        C2 = vi4[2]-vi1[2];
+        C3 = vi4[3]-vi1[3];
         return ((-A3*B2+A2*B3)*C1 +  (A3*B1-A1*B3)*C2 + (-A2*B1+A1*B2)*C3);
     end
 end
@@ -78,67 +78,67 @@ end
 function checkvolumes(when, vt, t)
     for i = 1:size(t, 1)
         if any(x->x==0, t[i,:])
-        else 
+        else
             if tetvtimes6(vt[:,t[i,1]], vt[:,t[i,2]], vt[:,t[i,3]], vt[:,t[i,4]]) < 0.0
                 error("*** $when Negative volume = $([t[i,:]])")
             end
-        end 
+        end
     end
 end
 
 """
-    coarsen(t::Array{Int, 2}, v::Array{Float64, 2}, tmid::Vector{Int}, options)
+    coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int}; bv::Vector{Bool} = Bool[], desired_ts::Number = 0.0, stretch::Number = 1.25, nblayer::Int = 1, surface_coarsening::Bool = false, preserve_thin::Bool = false, vertex_weight::Vector{Float64} = Float64[], reportprogress::F = n -> nothing) where {F<:Function}
 
-Coarsen a T4 (tetrahedral) mesh.  
+Coarsen a T4 (tetrahedral) mesh.
 
-## Arguments
-t = array with vertex numbers, one per tetrahedron in each row
-v= array of vertex coordinates, one per vertex in each row
-tmid = tetrahedron material identifiers, one for tetrahedron in each row
-options = structure with optional fields
-bv=array for all vertices in the input array v.  
-       Is the vertex on the boundary? True or false. The boundary vertices 
-       are in layer 1. The vertex layer numbers increase away from 
-       the boundary,  and the bigger the vertex layer number the bigger 
-       the mesh size.
-desired_ts=mesh size desired for vertices in layer 1, here mesh size is 
-       the length of an edge
-stretch=the mesh size should increase by this much within one layer of  
-       elements, default is 1.25
-nblayer=number of boundary layers where the mesh size should not increase, 
-       default is 1
-surface_coarsening = is the coarsening intended for the interior or for 
-       the surface? default is false, which means the default 
-       is coarsening of the interior.
-preserve_thin= when coarsening the surface, should features which are  thin 
-       be unaffected by the coarsening? Here thin means consisting of 
-       only "surface" vertices.
-vertex_weight= weight of vertices, one per  vertex; weight <= 1.0 is ignored, 
-       but weight>1.0  is used to "stretch" edges connected  to the vertex.
-       In this way one may preserve certain edges by assigning  larger 
-       weight to their vertices. Default is vertex_weight= [] (which means 
-       ignore the vertex weights)
+# Arguments
+- `t` = array with vertex numbers, one per tetrahedron in each row
+- `v` = array of vertex coordinates, one per vertex in each row
+- `tmid` = tetrahedron material identifiers, one per tetrahedron in each row
+- Keyword arguments:
+    + `bv`=array for all vertices in the input array v.
+           Is the vertex on the boundary? True or false. The boundary vertices
+           are in layer 1. The vertex layer numbers increase away from
+           the boundary,  and the bigger the vertex layer number the bigger
+           the mesh size.
+       + `desired_ts`=mesh size desired for vertices in layer 1, here mesh size is
+           the length of an edge
+       + `stretch`=the mesh size should increase by this much within one layer of
+            elements, default is 1.25
+       + `nblayer`=number of boundary layers where the mesh size should not increase,
+            default is 1
+       + `surface_coarsening` = is the coarsening intended for the interior or for
+           the surface? default is false, which means the default
+           is coarsening of the interior.
+       + `preserve_thin`= when coarsening the surface, should features which are  thin
+           be unaffected by the coarsening? Here thin means consisting of
+           only "surface" vertices.
+       + `vertex_weight`= weight of vertices, one per  vertex; weight <= 1.0 is ignored,
+           but weight>1.0  is used to "stretch" edges connected  to the vertex.
+           In this way one may preserve certain edges by assigning  larger
+           weight to their vertices. Default is vertex_weight= [] (which means
+           ignore the vertex weights)
 
-## Output
-t,v,tmid = new arrays
+# Output
+`t`, `v`, `tmid` = new arrays for the coarsened grid
 """
 function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int}; bv::Vector{Bool} = Bool[], desired_ts::Number = 0.0, stretch::Number = 1.25, nblayer::Int = 1, surface_coarsening::Bool = false, preserve_thin::Bool = false, vertex_weight::Vector{Float64} = Float64[], reportprogress::F = n -> nothing) where {F<:Function}
     vt = deepcopy(transpose(inputv))  # Better locality of data can be achieved with vertex coordinates in columns
     nv = size(inputv, 1)
     if length(bv) == nv
         vlayer = Int[i == true ? 1 : 0 for i in bv]
-    else 
+    else
         vlayer = Int[]
-    end 
+    end
     if length(vertex_weight) != nv
         vertex_weight = ones(nv)
-    end 
+    end
     m = FENodeToFEMap(t, nv)
     v2t = deepcopy(m.map);# Map vertex to tetrahedron
     e = T4meshedges(t);
     m = FENodeToFEMap(e, nv)
     v2e = deepcopy(m.map);# Map vertex to edge
-    
+
     # Figure out the  vertex layer numbers which are the guides to coarsening
     if (isempty(vlayer))
         # # Extract the boundary faces
@@ -146,19 +146,19 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
         vlayer = zeros(Int, nv);
         if (surface_coarsening)
             i = setdiff(collect(1:nv),vec(f));
-            vlayer[i] .= 1;# Mark all vertices in the interior (layer 1) 
-            vlayer[f] .= 2;# Mark all vertices on the boundary (layer 2) 
-            if (preserve_thin) # thin features should be preserved, 
+            vlayer[i] .= 1;# Mark all vertices in the interior (layer 1)
+            vlayer[f] .= 2;# Mark all vertices on the boundary (layer 2)
+            if (preserve_thin) # thin features should be preserved,
                 # mark them as interior (layer 1) so the algorithm does not touch them
                 oldvlayer = deepcopy(vlayer);
                 for j = vec(f)
                     # is any vertex connected to j  in the interior?
                     connected =false;
                     for k=1:length(v2e[j])
-                        if (oldvlayer(e[v2e[j][k],1]) == 1) 
+                        if (oldvlayer(e[v2e[j][k],1]) == 1)
                             connected = true; break;
                         end
-                        if (oldvlayer(e[v2e[j][k],2]) == 1) 
+                        if (oldvlayer(e[v2e[j][k],2]) == 1)
                             connected = true; break;
                         end
                     end
@@ -168,13 +168,13 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
                 end
             end
         else # not (surface_coarsening)
-            vlayer[f] .= 1;# Mark all vertices on the boundary (layer 1) 
-            # The remaining (interior) vertices will be numbered below 
-            # by  distance from the boundary 
+            vlayer[f] .= 1;# Mark all vertices on the boundary (layer 1)
+            # The remaining (interior) vertices will be numbered below
+            # by  distance from the boundary
         end
     end
-    
-    # Compute the vertex layer numbers for vertices for which they have not 
+
+    # Compute the vertex layer numbers for vertices for which they have not
     # been supplied (which is marked by 0).
     currvlayer = 1;
     while true
@@ -213,7 +213,7 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
         finalr=finalr-1;
         desiredes[layer] = desired_ts*stretch^finalr;
     end
-    
+
     # Initialize edge lengths, edge vertex counts
     es = zeros(size(e,1));
     elayer = zeros(Int, size(e,1));
@@ -223,7 +223,7 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
     minne = 200;    maxne = 400;# 36
     availe = _IntegerBuffer(zeros(Int, size(e,1)), 0) # Flexible  buffer to avoid allocations
     selist = _IntegerBuffer(zeros(Int, size(e,1)), 0) # Flexible  buffer to avoid allocations
-    
+
     checkvolumes("Before reduction starts", vt, t)
 
     # Let's get down to business
@@ -233,16 +233,16 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
         availe, currvlayer = availelist!(availe, selist, elayer, currvlayer, minne, maxne, es, nblayer, desiredes, everfailed);
         if currvlayer != previouscurrvlayer
             reportprogress(currvlayer)
-        end 
-        if (length(availe)==0)  
+        end
+        if (length(availe)==0)
             break; # Done. Hallelujah!
-        end 
+        end
         while true
             selist = sortedelist!(selist, elayer, es, desiredes, availe);
-            Change =  false; 
+            Change =  false;
             for i=1:length(selist)
                 if (collapseedge!(e, es, elayer, vlayer, t, vt, v2t, v2e, vertex_weight, selist[i]))
-                    Change = true;  break; 
+                    Change = true;  break;
                 end
                 everfailed[selist[i]] = true; # the collapse failed for this edge
             end
@@ -274,8 +274,8 @@ function collapseedge!(e::Array{Int, 2}, es::Vector{Float64}, elayer::Vector{Int
     for k = 1:length(mtl)
         for i = 1:4
             if t[mtl[k], i] == vi2
-                t[mtl[k], i] = vi1; 
-            end 
+                t[mtl[k], i] = vi1;
+            end
         end
     end
     # Modify e: switch the references to the replaced vertex vi2
@@ -283,8 +283,8 @@ function collapseedge!(e::Array{Int, 2}, es::Vector{Float64}, elayer::Vector{Int
     for k=1:length(mel)
         for i = 1:2
             if e[mel[k], i] == vi2
-                e[mel[k], i] = vi1; 
-            end 
+                e[mel[k], i] = vi1;
+            end
         end
     end
     # Delete the collapsed tetrahedra from the vertex-to-tet map
@@ -297,7 +297,7 @@ function collapseedge!(e::Array{Int, 2}, es::Vector{Float64}, elayer::Vector{Int
     del = v2e[vi2]; # vi2 is the vertex that is to be deleted
     for k =1:length(del)
         i = del[k];
-        (e[i,1] == vi2) ? ov = e[i,2] : ov = e[i,1]; 
+        (e[i,1] == vi2) ? ov = e[i,2] : ov = e[i,1];
         if ov in vl
             e[i,:] .= 0;# mark as deleted
             es[i] = Inf;# indicate the deleted edge
@@ -341,7 +341,7 @@ end
 
 # Weighted length of the edge between 2 vertices
 function elength(vt::AbstractArray{Float64, 2}, vertex_weight::Vector{Float64}, i1::Int, i2::Int)
-    @inbounds return max(vertex_weight[i1], vertex_weight[i2]) * 
+    @inbounds return max(vertex_weight[i1], vertex_weight[i2]) *
         sqrt((vt[1,i2] - vt[1,i1])^2 + (vt[2,i2] - vt[2,i1])^2 + (vt[3,i2] - vt[3,i1])^2);
 end
 
@@ -363,10 +363,10 @@ function availelist!(availe::_IntegerBuffer, selist::_IntegerBuffer, elayer::Vec
     empty!(selist)
     for layer = currvlayer:-1:nblayer+1 # This can be changed to allow for more or less coarsening
         empty!(availe)
-        @inbounds for i = 1:length(elayer) # @inbounds 
+        @inbounds for i = 1:length(elayer) # @inbounds
             if (layer <= elayer[i]) && (!everfailed[i])
                 push!(availe, i)
-            end 
+            end
         end
         selist = sortedelist!(selist, elayer, es, desiredes, availe);
         newcurrvlayer = layer;
@@ -380,21 +380,21 @@ end
 function anynegvol1(t::Array{Int,2}, whichtets::Vector{Int}, vt::AbstractArray{Float64,2}, whichv::Int, otherv::Int)
     for iS1 in whichtets
         i1, i2, i3, i4 = t[iS1,:]; # nodes of the tetrahedron
-        if (i1 == whichv) 
+        if (i1 == whichv)
             i1 = otherv
         end
-        if (i2 == whichv) 
+        if (i2 == whichv)
             i2 = otherv
         end
-        if (i3 == whichv) 
+        if (i3 == whichv)
             i3 = otherv
         end
-        if (i4 == whichv) 
+        if (i4 == whichv)
             i4 = otherv
         end
         if tetvtimes6(vt[:,i1], vt[:,i2], vt[:,i3], vt[:,i4]) < 0.0
             return true
-        end 
+        end
     end
     return false;
 end
@@ -471,7 +471,7 @@ end # module
 #         m = n+1;
 #         while m <= size(e,1)
 #             if (ue[m,1] != c)
-#                 break; 
+#                 break;
 #             end
 #             m = m+1;
 #         end
@@ -488,8 +488,8 @@ end # module
 # """
 # anynegvol(t, v, whichv, v1)
 
-# Check that the new location `v1` of the vertex `whichv` does not result 
-# in a negative volume  for any of the tetrahedra connected to `whichv`.  
+# Check that the new location `v1` of the vertex `whichv` does not result
+# in a negative volume  for any of the tetrahedra connected to `whichv`.
 
 # This is a heavily used function, and hence speed and absence of
 # memory allocation is at a premium.
@@ -499,59 +499,59 @@ end # module
 # Volume6 = 0.0 # @inbounds Volume6 = let
 # for iS1 in whichtets
 #     i1, i2, i3, i4 = t[iS1,:]; # nodes of the tetrahedron
-#     if (i1 == whichv) 
+#     if (i1 == whichv)
 #         @inbounds Volume6 = let
-#             A1 = vt[1,i2]-vt[1,otherv]; 
-#             A2 = vt[2,i2]-vt[2,otherv]; 
-#             A3 = vt[3,i2]-vt[3,otherv]; 
-#             B1 = vt[1,i3]-vt[1,otherv]; 
-#             B2 = vt[2,i3]-vt[2,otherv]; 
-#             B3 = vt[3,i3]-vt[3,otherv]; 
-#             C1 = vt[1,i4]-vt[1,otherv]; 
-#             C2 = vt[2,i4]-vt[2,otherv]; 
-#             C3 = vt[3,i4]-vt[3,otherv]; 
+#             A1 = vt[1,i2]-vt[1,otherv];
+#             A2 = vt[2,i2]-vt[2,otherv];
+#             A3 = vt[3,i2]-vt[3,otherv];
+#             B1 = vt[1,i3]-vt[1,otherv];
+#             B2 = vt[2,i3]-vt[2,otherv];
+#             B3 = vt[3,i3]-vt[3,otherv];
+#             C1 = vt[1,i4]-vt[1,otherv];
+#             C2 = vt[2,i4]-vt[2,otherv];
+#             C3 = vt[3,i4]-vt[3,otherv];
 #             ((-A3*B2+A2*B3)*C1 +  (A3*B1-A1*B3)*C2 + (-A2*B1+A1*B2)*C3)
 #         end
 #     end
-#     if (i2 == whichv) 
+#     if (i2 == whichv)
 #         @inbounds Volume6 = let
-#             A1 = vt[1,otherv]-vt[1,i1]; 
-#             A2 = vt[2,otherv]-vt[2,i1]; 
-#             A3 = vt[3,otherv]-vt[3,i1]; 
-#             B1 = vt[1,i3]-vt[1,i1]; 
-#             B2 = vt[2,i3]-vt[2,i1]; 
-#             B3 = vt[3,i3]-vt[3,i1]; 
-#             C1 = vt[1,i4]-vt[1,i1]; 
-#             C2 = vt[2,i4]-vt[2,i1]; 
-#             C3 = vt[3,i4]-vt[3,i1]; 
+#             A1 = vt[1,otherv]-vt[1,i1];
+#             A2 = vt[2,otherv]-vt[2,i1];
+#             A3 = vt[3,otherv]-vt[3,i1];
+#             B1 = vt[1,i3]-vt[1,i1];
+#             B2 = vt[2,i3]-vt[2,i1];
+#             B3 = vt[3,i3]-vt[3,i1];
+#             C1 = vt[1,i4]-vt[1,i1];
+#             C2 = vt[2,i4]-vt[2,i1];
+#             C3 = vt[3,i4]-vt[3,i1];
 #             ((-A3*B2+A2*B3)*C1 +  (A3*B1-A1*B3)*C2 + (-A2*B1+A1*B2)*C3)
 #         end
 #     end
-#     if (i3 == whichv) 
+#     if (i3 == whichv)
 #         @inbounds Volume6 = let
-#             A1 = vt[1,i2]-vt[1,i1]; 
-#             A2 = vt[2,i2]-vt[2,i1]; 
-#             A3 = vt[3,i2]-vt[3,i1]; 
-#             B1 = vt[1,otherv]-vt[1,i1]; 
-#             B2 = vt[2,otherv]-vt[2,i1]; 
-#             B3 = vt[3,otherv]-vt[3,i1]; 
-#             C1 = vt[1,i4]-vt[1,i1]; 
-#             C2 = vt[2,i4]-vt[2,i1]; 
-#             C3 = vt[3,i4]-vt[3,i1]; 
+#             A1 = vt[1,i2]-vt[1,i1];
+#             A2 = vt[2,i2]-vt[2,i1];
+#             A3 = vt[3,i2]-vt[3,i1];
+#             B1 = vt[1,otherv]-vt[1,i1];
+#             B2 = vt[2,otherv]-vt[2,i1];
+#             B3 = vt[3,otherv]-vt[3,i1];
+#             C1 = vt[1,i4]-vt[1,i1];
+#             C2 = vt[2,i4]-vt[2,i1];
+#             C3 = vt[3,i4]-vt[3,i1];
 #             ((-A3*B2+A2*B3)*C1 +  (A3*B1-A1*B3)*C2 + (-A2*B1+A1*B2)*C3)
 #         end
 #     end
-#     if (i4 == whichv) 
+#     if (i4 == whichv)
 #         @inbounds Volume6 = let
-#             A1 = vt[1,i2]-vt[1,i1]; 
-#             A2 = vt[2,i2]-vt[2,i1]; 
-#             A3 = vt[3,i2]-vt[3,i1]; 
-#             B1 = vt[1,i3]-vt[1,i1]; 
-#             B2 = vt[2,i3]-vt[2,i1]; 
-#             B3 = vt[3,i3]-vt[3,i1]; 
-#             C1 = vt[1,otherv]-vt[1,i1]; 
-#             C2 = vt[2,otherv]-vt[2,i1]; 
-#             C3 = vt[3,otherv]-vt[3,i1]; 
+#             A1 = vt[1,i2]-vt[1,i1];
+#             A2 = vt[2,i2]-vt[2,i1];
+#             A3 = vt[3,i2]-vt[3,i1];
+#             B1 = vt[1,i3]-vt[1,i1];
+#             B2 = vt[2,i3]-vt[2,i1];
+#             B3 = vt[3,i3]-vt[3,i1];
+#             C1 = vt[1,otherv]-vt[1,i1];
+#             C2 = vt[2,otherv]-vt[2,i1];
+#             C3 = vt[3,otherv]-vt[3,i1];
 #             ((-A3*B2+A2*B3)*C1 +  (A3*B1-A1*B3)*C2 + (-A2*B1+A1*B2)*C3)
 #         end
 #     end
