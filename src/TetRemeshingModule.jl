@@ -116,7 +116,7 @@ Coarsen a T4 (tetrahedral) mesh.
     + `vertex_weight`= weight of vertices, one per  vertex; weight <= 1.0 is ignored,
        but weight>1.0  is used to "stretch" edges connected  to the vertex.
        In this way one may preserve certain edges by assigning  larger
-       weight to their vertices. Default is vertex_weight= [] (which means
+       weight to their vertices. Default is `vertex_weight= []` (which means
        ignore the vertex weights)
 
 # Output
