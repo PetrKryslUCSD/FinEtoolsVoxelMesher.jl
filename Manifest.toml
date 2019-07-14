@@ -77,8 +77,10 @@ version = "0.4.1"
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[NIfTI]]
-deps = ["Base64", "GZip", "Mmap", "Test"]
-path = "../NIfTI.jl"
+deps = ["Base64", "GZip", "MappedArrays", "Mmap", "Test"]
+git-tree-sha1 = "46561f65fc44d4356a5a3f2318137506eb780ab4"
+repo-rev = "master"
+repo-url = "https://github.com/PetrKryslUCSD/NIfTI.jl.git"
 uuid = "a3a9e032-41b5-5fc4-967a-a6b7a19844d3"
 version = "0.4.0+"
 
