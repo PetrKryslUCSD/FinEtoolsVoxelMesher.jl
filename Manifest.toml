@@ -43,10 +43,10 @@ uuid = "91bb5406-6c9a-523d-811d-0644c4229550"
 version = "4.0.0"
 
 [[GZip]]
-deps = ["Libdl", "Test"]
-git-tree-sha1 = "ee443ef166b29282301468d8af403e1ed8f5412e"
+deps = ["Libdl"]
+git-tree-sha1 = "039be665faf0b8ae36e089cd694233f5dee3f7d6"
 uuid = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
-version = "0.5.0"
+version = "0.5.1"
 
 [[InteractiveUtils]]
 deps = ["Markdown"]
@@ -83,11 +83,11 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[NIfTI]]
 deps = ["Base64", "GZip", "MappedArrays", "Mmap", "Test"]
-git-tree-sha1 = "46561f65fc44d4356a5a3f2318137506eb780ab4"
+git-tree-sha1 = "beed76c042639255abaedacdd80a634f94654f77"
 repo-rev = "master"
 repo-url = "https://github.com/PetrKryslUCSD/NIfTI.jl.git"
-uuid = "a3a9e032-41b5-5fc4-967a-a6b7a19844d3"
-version = "0.4.0+"
+uuid = "f897abbf-c5d9-45cb-bf89-9f7f579a29ec"
+version = "0.1.0"
 
 [[OrderedCollections]]
 deps = ["Random", "Serialization", "Test"]

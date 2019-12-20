@@ -14,6 +14,7 @@ for basic operations on finite element meshes. `FinEtoolsVoxelMesher` uses `FinE
 
 ## News
 
+- 12/19/2019: Updated NIfTI.
 - 07/13/2019: Applications are now separated  out from the `FinEtools` package.
 
 [Past news](oldnews.md)
