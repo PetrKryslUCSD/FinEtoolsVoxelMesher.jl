@@ -14,8 +14,7 @@ for basic operations on finite element meshes. `FinEtoolsVoxelMesher` uses `FinE
 
 ## News
 
-- 12/19/2019: Updated NIfTI.
-- 07/13/2019: Applications are now separated  out from the `FinEtools` package.
+- 01/23/2020: Dependencies have been updated to work with Julia 1.3.1.
 
 [Past news](oldnews.md)
 
