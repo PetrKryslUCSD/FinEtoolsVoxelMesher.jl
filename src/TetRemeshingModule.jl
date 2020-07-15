@@ -155,10 +155,10 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
                     # is any vertex connected to j  in the interior?
                     connected =false;
                     for k=1:length(v2e[j])
-                        if (oldvlayer(e[v2e[j][k],1]) == 1)
+                        if (oldvlayer[e[v2e[j][k],1]] == 1)
                             connected = true; break;
                         end
-                        if (oldvlayer(e[v2e[j][k],2]) == 1)
+                        if (oldvlayer[e[v2e[j][k],2]] == 1)
                             connected = true; break;
                         end
                     end
