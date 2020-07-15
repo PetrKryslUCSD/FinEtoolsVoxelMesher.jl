@@ -6,9 +6,12 @@ for continuum mechanics. Package for meshing of voxel volumes.
 """
 module FinEtoolsVoxelMesher
 
-__precompile__(true)
+__precompile__(false)
 
-include("allmodules.jl")
+include("VoxelBoxModule.jl")
+include("TetRemeshingModule.jl")
+include("RemesherModule.jl")
+include("VoxelTetMeshingModule.jl")
 
 # Exports follow:
 
@@ -20,9 +23,13 @@ export fillvolume!, fillsolid!,  intersectionop, unionop, complementop,differenc
 # Exported: methods for  manipulation and visualization  of voxel boxes
 export trim, pad, threshold,  vtkexport
 
-using FinEtoolsVoxelMesher.VoxelTetMeshingModule: ElementSizeWeightFunction, ImageMesher, mesh!, volumes
+using FinEtoolsVoxelMesher.VoxelTetMeshingModule: ImageMesher, remesh!, volumes
 # Exported: type for the image mesher, type for control of element size gradation, method for generating  the mesh and queries
-export ImageMesher, ElementSizeWeightFunction, mesh!, volumes
+export ImageMesher, remesh!, volumes
+
+using FinEtoolsVoxelMesher.RemesherModule: ElementSizeWeightFunction, Remesher, setelementsizeweightfunctions, remesh!, volumes, meshdata
+# Exported: type for the image mesher, type for control of element size gradation, method for generating  the mesh and queries
+export Remesher, ElementSizeWeightFunction, setelementsizeweightfunctions, remesh!, volumes, meshdata
 
 
 end # module

@@ -365,7 +365,6 @@ function test()
     fillsolid!(V, differenceop(unionop(b1, b2), h1), 1)
 
     im = ImageMesher(V, zero(eltype(V.data)), eltype(V.data)[1])
-    mesh!(im)
     # println("Mesh size: initial = $(size(im.t,1))")
     # fens = FENodeSet(im.v)
     # fes = FESetT4(im.t)
@@ -373,13 +372,14 @@ function test()
     # File = "voxel_bracket_mesh_tet.vtk"
     # vtkexportmesh(File, fens, fes)
     # @async run(`"paraview.exe" $File`)
-    im.elementsizeweightfunctions = [ElementSizeWeightFunction(20.0, vec([0.0, 2.5, 2.5]), 1.0), ElementSizeWeightFunction(1.0, vec([0.0, 2.5, 2.5]), 3.5)]
-    mesh!(im, 1.01)
+    setelementsizeweightfunctions(im.remesher, [ElementSizeWeightFunction(20.0, vec([0.0, 2.5, 2.5]), 1.0), ElementSizeWeightFunction(1.0, vec([0.0, 2.5, 2.5]), 3.5)])
+    remesh!(im, 1.01)
     # println("Mesh size: final = $(size(im.t,1))")
-    @test (size(im.t,1) - 113857.)/113857 <= 0.0013
-    fens = FENodeSet(im.v)
-    fes = FESetT4(im.t)
-    setlabel!(fes, im.tmid)
+    t, v, tmid = meshdata(im.remesher)
+    @test (size(t,1) - 113857.)/113857 <= 0.0013
+    fens = FENodeSet(v)
+    fes = FESetT4(t)
+    setlabel!(fes, tmid)
 
     # File = "voxel_bracket_mesh_tet.vtk"
     # vtkexportmesh(File, fens, fes)
@@ -392,8 +392,24 @@ mmmremeshingm1m.test()
 module mmvoxel_bracket_mesh
 using FinEtools
 using FinEtoolsVoxelMesher
+using FinEtoolsVoxelMesher.TetRemeshingModule: tetvtimes6
 using FinEtools.MeshExportModule
 using Test
+function checkvolumes(when, vt, t)
+    if size(vt, 1) < maximum(t[:])
+        error("*** $when Wrong number of vertices")
+    end
+    vt = transpose(deepcopy(vt))
+    for i = 1:size(t, 1)
+        if any(x->x==0, t[i,:])
+            @warn "t[$i,:] = $(t[i,:])"
+        else
+            if tetvtimes6(vt[:,t[i,1]], vt[:,t[i,2]], vt[:,t[i,3]], vt[:,t[i,4]]) < 0.0
+                error("*** $when Negative volume = $([t[i,:]])")
+            end
+        end
+    end
+end
 function test()
     V = VoxelBoxVolume(Int, 8*[5,6,7], [4.0, 4.0, 5.0])
 
@@ -402,38 +418,39 @@ function test()
     h1 = solidcylinder((2.0, 2.5, 2.5), (1.0, 0.0, 0.0), 0.75)
     fillsolid!(V, differenceop(unionop(b1, b2), h1), 1)
 
-    function checkvolumes(im)
-        for i = 1:size(im.t, 1)
-            if FinEtools.MeshTetrahedronModule.tetv1times6(im.v, im.t[i,1], im.t[i,2], im.t[i,3], im.t[i,4]) < 0.0
-                println("Negative volume = $([im.t[i,1], im.t[i,2], im.t[i,3], im.t[i,4]])")
-            end
-        end
-    end
-
     im = ImageMesher(V, zero(eltype(V.data)), eltype(V.data)[1])
-    mesh!(im)
-    checkvolumes(im)
+    t, v, tmid = meshdata(im.remesher)
+    checkvolumes("test", v, t)
     # println("Mesh size: initial = $(size(im.t,1))")
-    @test size(im.t,1) == 196275
+    fens = FENodeSet(v)
+    fes = FESetT4(t)
+    setlabel!(fes, tmid)
+    File = "voxel_bracket_mesh_tet.vtk"
+    vtkexportmesh(File, fens, fes)
 
-    im.elementsizeweightfunctions = [ElementSizeWeightFunction(20.0, vec([0.0, 2.5, 2.5]), 1.0), ElementSizeWeightFunction(1.0, vec([0.0, 2.5, 2.5]), 3.5)]
+    @test size(t,1) == 196275
+
+    setelementsizeweightfunctions(im.remesher, [ElementSizeWeightFunction(20.0, vec([0.0, 2.5, 2.5]), 1.0), ElementSizeWeightFunction(1.0, vec([0.0, 2.5, 2.5]), 3.5)])
     for i = 1:12
         #println("Phase $i");
-        checkvolumes(im)
-        mesh!(im, 1.1)
-        checkvolumes(im)
+        t, v, tmid = meshdata(im.remesher)
+        checkvolumes("test", v, t)
+        remesh!(im, 1.1)
+        t, v, tmid = meshdata(im.remesher)
+        checkvolumes("test", v, t)
         #println("Mesh size: final = $(size(im.t,1))")
-        V = volumes(im)
-        @test length(findall(x -> x <= 0.0, V)) == 0
+        # V = volumes(im.remesher)
+        # @test length(findall(x -> x <= 0.0, V)) == 0
         # println("length(find(x -> x <= 0.0, V)) = $(length(find(x -> x <= 0.0, V)))")
         # open("im$(i)" * ".jls", "w") do file
         #     serialize(file, im)
         # end
     end
 
-    fens = FENodeSet(im.v)
-    fes = FESetT4(im.t)
-    setlabel!(fes, im.tmid)
+    t, v, tmid = meshdata(im.remesher)
+    fens = FENodeSet(v)
+    fes = FESetT4(t)
+    setlabel!(fes, tmid)
     #println("count(fes) = $(count(fes))")
     @test abs(count(fes) - 14086) / 14086 <= 0.004
 
