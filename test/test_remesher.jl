@@ -34,7 +34,7 @@ function test()
         # println("Surface mesh: $(count(meshboundary(fes))) triangles")
     end
     t, v, tmid = meshdata(remesher)
-    @test length(tmid) == 1316
+    @test length(tmid) == 4725
 
 end
 end
