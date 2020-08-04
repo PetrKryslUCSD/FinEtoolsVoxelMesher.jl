@@ -6,7 +6,7 @@ for continuum mechanics. Package for meshing of voxel volumes.
 """
 module FinEtoolsVoxelMesher
 
-__precompile__(false)
+__precompile__(true)
 
 include("VoxelBoxModule.jl")
 include("TetRemeshingModule.jl")
