@@ -11,10 +11,8 @@ NIfTI = "a3a9e032-41b5-5fc4-967a-a6b7a19844d3"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
-
 [compat]
-FinEtools  = "4.2"   
-MappedArrays = "0.2"                                                                                                 
-NIfTI = "0.4"  
-julia = "1.4"
-                                                                                                  
+FinEtools = "^4"
+MappedArrays = "0.2"
+NIfTI = "0.4"
+julia = "^1.3"
