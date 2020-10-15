@@ -11,7 +11,7 @@ import FinEtools.MeshTetrahedronModule: T4voximg, tetv
 import FinEtools.FESetModule: connasarray
 import FinEtools.MeshModificationModule: interior2boundary, vertexneighbors, smoothertaubin
 import ..TetRemeshingModule: coarsen
-import ..RemesherModule: Remesher, remesh!, volumes, smooth!
+import ..RemesherModule: Remesher, remesh!, volumes, smooth!, meshdata
 import LinearAlgebra: norm
 import Statistics: mean
 
@@ -39,6 +39,20 @@ end
 function smooth!(self::ImageMesher, npass::Int = 5)
     smooth!(self.remesher, npass)
     return self
+end
+
+"""
+    meshdata(self::ImageMesher)
+
+Retrieve the current mesh data.
+
+The three arrays returned are: 
+- `t` = array of tetrahedral connectivities, one row per element, 
+- `v` = array of coordinates of the nodes, one row per vertex, 
+- `tmid` = array of material identifiers, one per element.
+"""
+function meshdata(self::ImageMesher)
+    return meshdata(self.remesher)
 end
 
 """

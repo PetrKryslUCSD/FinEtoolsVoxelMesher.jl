@@ -420,6 +420,7 @@ function test()
 
     im = ImageMesher(V, zero(eltype(V.data)), eltype(V.data)[1])
     t, v, tmid = meshdata(im.remesher)
+    t, v, tmid = meshdata(im)
     checkvolumes("test", v, t)
     # println("Mesh size: initial = $(size(im.t,1))")
     fens = FENodeSet(v)

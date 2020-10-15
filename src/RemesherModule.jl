@@ -179,6 +179,17 @@ function remesh!(self::Remesher, stretch::FFlt = 1.2)
     return self
 end
 
+
+"""
+    meshdata(self::Remesher)
+
+Retrieve the current mesh data.
+
+The three arrays returned are: 
+- `t` = array of tetrahedral connectivities, one row per element, 
+- `v` = array of coordinates of the nodes, one row per vertex, 
+- `tmid` = array of material identifiers, one per element.
+"""
 function meshdata(self::Remesher)
     return self.t, self.v, self.tmid
 end

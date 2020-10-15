@@ -34,6 +34,11 @@ function test()
         # println("Surface mesh: $(count(meshboundary(fes))) triangles")
     end
     t, v, tmid = meshdata(remesher)
+    fens.xyz = v;
+    fes = fromarray!(fes, t)
+    setlabel!(fes, tmid)
+    vtkexportmesh("sample.vtk", fens, fes);
+
     @test length(tmid) == 4725
 
 end

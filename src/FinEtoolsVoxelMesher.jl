@@ -23,9 +23,9 @@ export fillvolume!, fillsolid!,  intersectionop, unionop, complementop,differenc
 # Exported: methods for  manipulation and visualization  of voxel boxes
 export trim, pad, threshold,  vtkexport
 
-using FinEtoolsVoxelMesher.VoxelTetMeshingModule: ImageMesher, remesh!, volumes
+using FinEtoolsVoxelMesher.VoxelTetMeshingModule: ImageMesher, remesh!, volumes, meshdata
 # Exported: type for the image mesher, type for control of element size gradation, method for generating  the mesh and queries
-export ImageMesher, remesh!, volumes
+export ImageMesher, remesh!, volumes, meshdata
 
 using FinEtoolsVoxelMesher.RemesherModule: ElementSizeWeightFunction, Remesher, setelementsizeweightfunctions, remesh!, volumes, meshdata
 # Exported: type for the image mesher, type for control of element size gradation, method for generating  the mesh and queries
