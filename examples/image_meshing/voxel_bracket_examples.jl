@@ -48,26 +48,28 @@ function voxel_bracket_mesh_tet_remesh()
     h1 = solidcylinder((2.0, 2.5, 2.5), (1.0, 0.0, 0.0), 0.75)
     fillsolid!(V, differenceop(unionop(b1, b2), h1), 1)
 
-    function checkvolumes(im)
-        for i = 1:size(im.t, 1)
-            if FinEtools.MeshTetrahedronModule.tetv1times6(im.v, im.t[i,1], im.t[i,2], im.t[i,3], im.t[i,4]) < 0.0
-                println("Negative volume = $([im.t[i,1], im.t[i,2], im.t[i,3], im.t[i,4]])")
+    function checkvolumes(t, v)
+        for i = 1:size(t, 1)
+            if FinEtools.MeshTetrahedronModule.tetv1times6(v, t[i,1], t[i,2], t[i,3], t[i,4]) < 0.0
+                println("Negative volume = $([t[i,1], t[i,2], t[i,3], t[i,4]])")
             end
         end
     end
 
     im = ImageMesher(V, zero(eltype(V.data)), eltype(V.data)[1])
-    mesh!(im)
-    checkvolumes(im)
-    println("Mesh size: initial = $(size(im.t,1))")
+    t, v, tmid = meshdata(im)
+    checkvolumes(t, v)
+    println("Mesh size: initial = $(size(t,1))")
 
-    im.elementsizeweightfunctions = [ElementSizeWeightFunction(20.0, vec([0.0, 2.5, 2.5]), 1.0), ElementSizeWeightFunction(1.0, vec([0.0, 2.5, 2.5]), 3.5)]
+    setelementsizeweightfunctions(im.remesher, [ElementSizeWeightFunction(20.0, vec([0.0, 2.5, 2.5]), 1.0), ElementSizeWeightFunction(1.0, vec([0.0, 2.5, 2.5]), 3.5)])
     for i = 1:12
         println("Phase $i");
-        checkvolumes(im)
-        mesh!(im, 1.1)
-        checkvolumes(im)
-        println("Mesh size: final = $(size(im.t,1))")
+        t, v, tmid = meshdata(im)
+        checkvolumes(t, v)
+        remesh!(im, 1.1)
+        t, v, tmid = meshdata(im)
+        checkvolumes(t, v)
+        println("Mesh size: final = $(size(t,1))")
         V = volumes(im)
         println("Number of negative volumes = $(length(findall(x -> x <= 0.0, V)))")
         # open("im$(i)" * ".jls", "w") do file
@@ -75,9 +77,10 @@ function voxel_bracket_mesh_tet_remesh()
         # end
     end
 
-    fens = FENodeSet(im.v)
-    fes = FESetT4(im.t)
-    setlabel!(fes, im.tmid)
+    t, v, tmid = meshdata(im)
+    fens = FENodeSet(v)
+    fes = FESetT4(t)
+    setlabel!(fes, tmid)
 
     # bfes = meshboundary(fes)
     # list = selectelem(fens, fes; overlappingbox = boundingbox([0.2018 2.1537 3.9064]), inflate = 0.01, allin = false)
