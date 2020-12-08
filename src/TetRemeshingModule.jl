@@ -125,10 +125,9 @@ Coarsen a T4 (tetrahedral) mesh.
 function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int}; bv::Vector{Bool} = Bool[], desired_ts::Number = 0.0, stretch::Number = 1.25, nblayer::Int = 1, surface_coarsening::Bool = false, preserve_thin::Bool = false, vertex_weight::Vector{Float64} = Float64[], reportprogress::F = n -> nothing) where {F<:Function}
     vt = deepcopy(transpose(inputv))  # Better locality of data can be achieved with vertex coordinates in columns
     nv = size(inputv, 1)
+    vlayer = Int[]
     if length(bv) == nv
-        vlayer = Int[i == true ? 1 : 0 for i in bv]
-    else
-        vlayer = Int[]
+        vlayer = Int[bi == true ? 1 : 0 for bi in bv]
     end
     if length(vertex_weight) != nv
         vertex_weight = ones(nv)

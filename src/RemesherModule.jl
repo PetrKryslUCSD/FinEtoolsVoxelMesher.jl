@@ -66,7 +66,15 @@ end
 
 function coarsenvolume!(self::Remesher, desired_element_size::FFlt)
     vertex_weight = evaluateweights(self)
-    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; surface_coarsening = false, desired_ts = desired_element_size, vertex_weight = vertex_weight);
+    utmid  = unique(self.tmid)
+    for i in utmid
+        t = self.t[self.tmid .== i, :]
+        bc = _t4boundary(t)
+        for av in bc[:]
+            vertex_weight[av] = Inf
+        end
+    end
+    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; desired_ts = desired_element_size, vertex_weight = vertex_weight);
     return self;
 end
 
@@ -85,6 +93,7 @@ function coarsensurface!(self::Remesher, desired_element_size::FFlt)
         bc = _t4boundary(t)
         bv[bc[:]] .= true
     end
+    
     self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; bv = bv, surface_coarsening = true, desired_ts = desired_element_size, vertex_weight = vertex_weight);
     return self;
 end
@@ -121,7 +130,13 @@ function smooth!(self::Remesher, npass::Int = 5)
 
     # Find boundary vertices
     bv = falses(size(self.v, 1));
-    f = interior2boundary(self.t, [1 3 2; 1 2 4; 2 3 4; 1 4 3])
+    f = nothing
+    utmid  = unique(self.tmid)
+    for i in utmid
+        t = self.t[self.tmid .== i, :]
+        bc = _t4boundary(t)
+        f == nothing ? f = bc : f = vcat(f, bc)
+    end
 
     # find neighbors for the SURFACE vertices
     fvn = vertexneighbors(f, size(self.v, 1));
