@@ -7,6 +7,7 @@ module RemesherModule
 
 using FinEtools.FTypesModule: FInt, FFlt, FCplxFlt, FFltVec, FIntVec, FFltMat, FIntMat, FMat, FVec, FDataDict
 import FinEtools.MeshTetrahedronModule: T4voximg, tetv, T4meshedges
+import FinEtools.MeshModificationModule
 import FinEtools.FESetModule: connasarray
 import FinEtools.MeshModificationModule: interior2boundary, vertexneighbors, smoothertaubin
 import ..TetRemeshingModule: coarsen
@@ -53,9 +54,9 @@ end
 function evaluateweights(self::Remesher)
     vertex_weight = ones(FFlt, size(self.v,1));
     if !isempty(self.elementsizeweightfunctions)
-        for i = 1:size(self.v,1)
+        for i in 1:size(self.v,1)
             vertex_weight[i] = 1.0
-            for jewf=1:length(self.elementsizeweightfunctions)
+            for jewf in 1:length(self.elementsizeweightfunctions)
                 vertex_weight[i] = max(vertex_weight[i], weight(self.elementsizeweightfunctions[jewf], vec(self.v[i, :])))
             end
         end
@@ -69,9 +70,22 @@ function coarsenvolume!(self::Remesher, desired_element_size::FFlt)
     return self;
 end
 
+function _t4boundary(t)
+    hypf =  vcat(t[:,[1, 3, 2]], t[:,[1, 2, 4]], t[:,[2, 3, 4]], t[:,[1, 4, 3]]);
+    bdryconn = MeshModificationModule._myunique2(hypf);
+    return bdryconn;
+end
+
 function coarsensurface!(self::Remesher, desired_element_size::FFlt)
     vertex_weight = evaluateweights(self)
-    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; surface_coarsening = true, desired_ts = desired_element_size, vertex_weight = vertex_weight);
+    utmid  = unique(self.tmid)
+    bv = fill(false, size(self.v, 1))
+    for i in utmid
+        t = self.t[self.tmid .== i, :]
+        bc = _t4boundary(t)
+        bv[bc[:]] .= true
+    end
+    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; bv = bv, surface_coarsening = true, desired_ts = desired_element_size, vertex_weight = vertex_weight);
     return self;
 end
 
