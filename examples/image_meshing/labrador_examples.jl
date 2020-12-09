@@ -41,7 +41,8 @@ function labrador_1()
 	# tetrahedra
 	println("Reducing the size of the mesh")
 	for i = 1:7
-	    remesh!(im, 1.2)
+	    remesh!(im)
+	    updatecurrentelementsize!(im, 1.2*im.remesher.currentelementsize)
 	    t, v, tmid = meshdata(im)
 	    println("Mesh size: intermediate = $(size(t,1)) tetrahedra")
 	end
