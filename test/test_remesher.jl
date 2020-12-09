@@ -23,7 +23,8 @@ function test()
    for pass in 1:4
         remesh!(remesher)
         t, v, tmid = meshdata(remesher)
-        fens.xyz = v
+        #@show size(v, 1)
+        #fens.xyz = v
         fes = fromarray!(fes, t)
         setlabel!(fes, tmid)
         # File = "Unref-$(pass).vtk"
@@ -39,7 +40,7 @@ function test()
     setlabel!(fes, tmid)
     vtkexportmesh("sample.vtk", fens, fes);
 
-    @test length(tmid) == 4725
+    @test length(tmid) == 13655
 
 end
 end
