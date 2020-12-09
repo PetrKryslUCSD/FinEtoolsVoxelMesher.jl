@@ -87,9 +87,9 @@ version = "0.8.3"
 
 [[FinEtools]]
 deps = ["Arpack", "DelimitedFiles", "LinearAlgebra", "LoopVectorization", "Printf", "Random", "SparseArrays", "Statistics", "StatsBase", "Test", "Unicode"]
-path = "../FinEtools.jl"
+git-tree-sha1 = "3044ea02806cd69beaa9af41d8f5e97d251ca202"
 uuid = "91bb5406-6c9a-523d-811d-0644c4229550"
-version = "4.7.7"
+version = "4.8.1"
 
 [[GZip]]
 deps = ["Libdl"]
