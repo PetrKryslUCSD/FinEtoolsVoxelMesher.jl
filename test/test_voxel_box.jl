@@ -373,7 +373,8 @@ function test()
     # vtkexportmesh(File, fens, fes)
     # @async run(`"paraview.exe" $File`)
     setelementsizeweightfunctions(im.remesher, [ElementSizeWeightFunction(20.0, vec([0.0, 2.5, 2.5]), 1.0), ElementSizeWeightFunction(1.0, vec([0.0, 2.5, 2.5]), 3.5)])
-    remesh!(im, 1.01)
+    remesh!(im)
+    updatecurrentelementsize!(im, 1.2*im.remesher.currentelementsize)
     # println("Mesh size: final = $(size(im.t,1))")
     t, v, tmid = meshdata(im.remesher)
     @test (size(t,1) - 113857.)/113857 <= 0.0013
@@ -436,7 +437,8 @@ function test()
         #println("Phase $i");
         t, v, tmid = meshdata(im.remesher)
         checkvolumes("test", v, t)
-        remesh!(im, 1.1)
+        remesh!(im)
+        updatecurrentelementsize!(im, 1.1*im.remesher.currentelementsize)
         t, v, tmid = meshdata(im.remesher)
         checkvolumes("test", v, t)
         #println("Mesh size: final = $(size(im.t,1))")
@@ -453,7 +455,7 @@ function test()
     fes = FESetT4(t)
     setlabel!(fes, tmid)
     #println("count(fes) = $(count(fes))")
-    @test abs(count(fes) - 34996) / 34996 <= 0.004
+    @test abs(count(fes) - 15253) / 15253 <= 0.004
 
     # bfes = meshboundary(fes)
     # list = selectelem(fens, fes; overlappingbox = boundingbox([0.2018 2.1537 3.9064]), inflate = 0.01, allin = false)

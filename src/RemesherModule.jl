@@ -87,14 +87,13 @@ end
 function coarsensurface!(self::Remesher, desired_element_size::FFlt)
     vertex_weight = evaluateweights(self)
     utmid  = unique(self.tmid)
-    bv = fill(false, size(self.v, 1))
+    bv = fill(true, size(self.v, 1))
     for i in utmid
         t = self.t[self.tmid .== i, :]
         bc = _t4boundary(t)
-        bv[bc[:]] .= true
+        bv[bc[:]] .= false
     end
-    
-    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; bv = bv, surface_coarsening = true, desired_ts = desired_element_size, vertex_weight = vertex_weight);
+    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; bv = bv, desired_ts = desired_element_size, vertex_weight = vertex_weight);
     return self;
 end
 
@@ -122,6 +121,7 @@ function allnonnegativevolumes(v, t)
     return true
 end
 
+
 function smooth!(self::Remesher, npass::Int = 5)
     if !allnonnegativevolumes(self.v, self.t) # This test is not strictly necessary,  just  while the remeshing procedure is in flux
         error("shouldn't be here")
@@ -129,7 +129,6 @@ function smooth!(self::Remesher, npass::Int = 5)
     V = zeros(size(self.t, 1)) # tetrahedron volumes
 
     # Find boundary vertices
-    bv = falses(size(self.v, 1));
     f = nothing
     utmid  = unique(self.tmid)
     for i in utmid
@@ -141,6 +140,7 @@ function smooth!(self::Remesher, npass::Int = 5)
     # find neighbors for the SURFACE vertices
     fvn = vertexneighbors(f, size(self.v, 1));
     # Smoothing considering only surface connections
+    bv = falses(size(self.v, 1)); # No Surface vertices
     fv = FFltMat[]
     trialfv = deepcopy(self.v)
     for pass = 1:npass
@@ -158,7 +158,8 @@ function smooth!(self::Remesher, npass::Int = 5)
     # find neighbors for the VOLUME vertices
     vn =  vertexneighbors(self.t, size(self.v, 1));
     # Smoothing considering all connections through the volume
-    bv[vec(f)] .= true;
+    bv = falses(size(self.v, 1));
+    bv[vec(f)] .= true; # Consider surface vertices
     v = FFltMat[]
     trialv = deepcopy(fv)
     for pass = 1:npass
@@ -189,25 +190,35 @@ function smooth!(self::Remesher, npass::Int = 5)
 end
 
 """
-    remesh!(self::Remesher, stretch::FFlt = 1.2)
+    remesh!(self::Remesher)
 
 Perform a remeshing step.
 
 A coarsening sequence of coarsen surface -> smooth -> coarsen volume -> smooth
-is performed.
+is performed. The current element size (`self.currentelementsize`) is used. So
+don't forget to update the current elements size for the next iteration of the
+re-meshing algorithm.
 
-After meshing the vertices, tetrahedra, and material identifiers,  can be retrieved
-as `t, v, tmid = meshdata(remesher)`.
+After meshing, the vertices, tetrahedra, and material identifiers,  can be
+retrieved as `t, v, tmid = meshdata(remesher)`.
 """
-function remesh!(self::Remesher, stretch::FFlt = 1.2)
+function remesh!(self::Remesher)
     coarsensurface!(self, sqrt(1.0)*self.currentelementsize)
-    smooth!(self);
+    #smooth!(self);
     coarsenvolume!(self, sqrt(2.0)*self.currentelementsize);
     smooth!(self);
-    self.currentelementsize = stretch * self.currentelementsize
     return self
 end
 
+"""
+    updatecurrentelementsize!(self::Remesher, newcurrentelementsize)
+
+Update current elements size.
+"""
+updatecurrentelementsize!(self::Remesher, newcurrentelementsize) = let
+    self.currentelementsize = newcurrentelementsize
+    self
+end
 
 """
     meshdata(self::Remesher)

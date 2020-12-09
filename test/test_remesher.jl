@@ -22,6 +22,7 @@ function test()
    remesher = Remesher(fens.xyz, connasarray(fes), [1 for idx in 1:count(fes)], 0.0)
    for pass in 1:4
         remesh!(remesher)
+        updatecurrentelementsize!(remesher, 1.2*remesher.currentelementsize)
         t, v, tmid = meshdata(remesher)
         #@show size(v, 1)
         #fens.xyz = v
@@ -40,7 +41,7 @@ function test()
     setlabel!(fes, tmid)
     vtkexportmesh("sample.vtk", fens, fes);
 
-    @test length(tmid) == 13655
+    @test length(tmid) == 4857
 
 end
 end

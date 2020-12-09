@@ -11,7 +11,7 @@ import FinEtools.MeshTetrahedronModule: T4voximg, tetv
 import FinEtools.FESetModule: connasarray
 import FinEtools.MeshModificationModule: interior2boundary, vertexneighbors, smoothertaubin
 import ..TetRemeshingModule: coarsen
-import ..RemesherModule: Remesher, remesh!, volumes, smooth!, meshdata
+import ..RemesherModule: Remesher, remesh!, volumes, smooth!, meshdata, updatecurrentelementsize!
 import LinearAlgebra: norm
 import Statistics: mean
 
@@ -56,20 +56,26 @@ function meshdata(self::ImageMesher)
 end
 
 """
-    mesh!(self::ImageMesher, stretch::FFlt = 1.2)
+    mesh!(self::ImageMesher)
 
 Perform a meshing step.
 
 If  no mesh exists,  the initial mesh is created; otherwise a coarsening
 sequence of coarsen surface -> smooth -> coarsen volume -> smooth is performed.
+The current element size (`self.currentelementsize`) is used. So
+don't forget to update the current elements size for the next iteration of the
+re-meshing algorithm.
 
 After meshing the vertices, tetrahedra, and material identifiers,  can be retrieved
 as `self.v`, `self.t`, and `self.tmid`.
 """
-function remesh!(self::ImageMesher, stretch::FFlt = 1.2)
-    remesh!(self.remesher, stretch)
+function remesh!(self::ImageMesher)
+    remesh!(self.remesher)
     return self
 end
+
+updatecurrentelementsize!(self::ImageMesher, newcurrentelementsize) =  updatecurrentelementsize!(self.remesher, newcurrentelementsize)
+
 
 """
     volumes(self::ImageMesher)
