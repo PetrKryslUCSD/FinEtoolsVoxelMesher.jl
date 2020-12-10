@@ -221,6 +221,13 @@ updatecurrentelementsize!(self::Remesher, newcurrentelementsize) = let
 end
 
 """
+    currentelementsize(self::Remesher)
+
+Retrieve the current element size.
+"""
+currentelementsize(self::Remesher) = self.currentelementsize 
+
+"""
     meshdata(self::Remesher)
 
 Retrieve the current mesh data.

@@ -11,7 +11,7 @@ import FinEtools.MeshTetrahedronModule: T4voximg, tetv
 import FinEtools.FESetModule: connasarray
 import FinEtools.MeshModificationModule: interior2boundary, vertexneighbors, smoothertaubin
 import ..TetRemeshingModule: coarsen
-import ..RemesherModule: Remesher, remesh!, volumes, smooth!, meshdata, updatecurrentelementsize!
+import ..RemesherModule: Remesher, remesh!, volumes, smooth!, meshdata, updatecurrentelementsize!, currentelementsize
 import LinearAlgebra: norm
 import Statistics: mean
 
@@ -76,6 +76,12 @@ end
 
 updatecurrentelementsize!(self::ImageMesher, newcurrentelementsize) =  updatecurrentelementsize!(self.remesher, newcurrentelementsize)
 
+"""
+    currentelementsize(self::ImageMesher)
+
+Retrieve the current element size.
+"""
+currentelementsize(self::ImageMesher) = currentelementsize(self.remesher) 
 
 """
     volumes(self::ImageMesher)
