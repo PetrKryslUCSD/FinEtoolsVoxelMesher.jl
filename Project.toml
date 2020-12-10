@@ -1,7 +1,7 @@
 name = "FinEtoolsVoxelMesher"
 uuid = "508a6b02-8bde-11e9-1a67-e1104bdc04c9"
 authors = ["Petr Krysl <pkrysl@ucsd.edu>"]
-version = "0.4.1"
+version = "0.4.2"
 
 [deps]
 FinEtools = "91bb5406-6c9a-523d-811d-0644c4229550"
@@ -13,7 +13,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [compat]
-FinEtools = "^4.7"
+FinEtools = "^4.8"
 MappedArrays = "^0.2"
 NIfTI = "^0.4"
 UnicodePlots = "^1.3"

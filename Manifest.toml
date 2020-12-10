@@ -20,9 +20,9 @@ version = "3.5.0+3"
 
 [[ArrayInterface]]
 deps = ["LinearAlgebra", "Requires", "SparseArrays"]
-git-tree-sha1 = "8dda4b50619df45559e6e49d8b72b706ee213923"
+git-tree-sha1 = "de4bb46df3f67769356e737f2c7ce1d67da3ae49"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "2.14.3"
+version = "2.14.4"
 
 [[Artifacts]]
 deps = ["Pkg"]
@@ -87,9 +87,11 @@ version = "0.8.3"
 
 [[FinEtools]]
 deps = ["Arpack", "DelimitedFiles", "LinearAlgebra", "LoopVectorization", "Printf", "Random", "SparseArrays", "Statistics", "StatsBase", "Test", "Unicode"]
-git-tree-sha1 = "3044ea02806cd69beaa9af41d8f5e97d251ca202"
+git-tree-sha1 = "8be17e7f3eeec993bb136f027c994d9eb186b997"
+repo-rev = "master"
+repo-url = "https://github.com/PetrKryslUCSD/FinEtools.jl.git"
 uuid = "91bb5406-6c9a-523d-811d-0644c4229550"
-version = "4.8.1"
+version = "4.8.2"
 
 [[GZip]]
 deps = ["Libdl"]
@@ -133,9 +135,9 @@ uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
 
 [[LoopVectorization]]
 deps = ["ArrayInterface", "DocStringExtensions", "IfElse", "LinearAlgebra", "OffsetArrays", "SLEEFPirates", "UnPack", "VectorizationBase"]
-git-tree-sha1 = "d31307fd2dc8baeee93c84ff8a8674730633a10a"
+git-tree-sha1 = "3418ad4b5b31942901b5a5010d31f218a8fd8b8d"
 uuid = "bdcacae8-1622-11e9-2a5c-532679323890"
-version = "0.9.1"
+version = "0.9.5"
 
 [[MappedArrays]]
 git-tree-sha1 = "e2a02fe7ee86a10c707ff1756ab1650b40b140bb"
@@ -263,6 +265,6 @@ version = "1.3.0"
 
 [[VectorizationBase]]
 deps = ["ArrayInterface", "Hwloc", "IfElse", "Libdl", "LinearAlgebra"]
-git-tree-sha1 = "5ddf871e7403d59efb0958e4db2561e008bd4402"
+git-tree-sha1 = "c55fdded34d7a34c13286a02e1b94bcbb0a02857"
 uuid = "3d5dd08c-fd9d-11e8-17fa-ed2836048c2f"
-version = "0.13.6"
+version = "0.13.9"
