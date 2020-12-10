@@ -10,6 +10,7 @@ import Base.getindex
 import Base.copy!
 import FinEtools.FENodeToFEMapModule: FENodeToFEMap
 import FinEtools.MeshTetrahedronModule: T4meshedges
+import FinEtools.MeshModificationModule
 import FinEtools.MeshModificationModule: interior2boundary
 import LinearAlgebra: norm
 
@@ -262,7 +263,7 @@ function collapseedge!(e::Array{Int, 2}, es::Vector{Float64}, elayer::Vector{Int
     # if the operation would result in inverted tetrahedra, cancel it
     de1, de2 = e[dei, 1], e[dei, 2];
     if anynegvol1(t, v2t[de2], vt, de2, de1)
-        de1, de2 = e[dei, 2], e[dei, 1];;# Try the edge the other way
+        de1, de2 = de2, de1;# Try the edge the other way
         if anynegvol1(t, v2t[de2], vt, de2, de1)
             return false; # the collapse failed
         end
@@ -405,7 +406,7 @@ function cleanoutput(t::Array{Int,2}, v::Array{Float64,2}, tmid::Array{Int,1})
     for i=1:size(v,1)
         if (v[i,1] != Inf) # Is this an active vertex?
             nn[i] = k;
-            nv[k,:] =v[i,:];
+            nv[k,:] = v[i,:];
             k=k+1;
         end
     end
@@ -429,6 +430,7 @@ function cleanoutput(t::Array{Int,2}, v::Array{Float64,2}, tmid::Array{Int,1})
         end
     end
     t = nt[1:k-1,:];
+
     # delete unconnected vertices
     uv = unique(vec(t));
     if (length(uv) != size(v,1)) # there may be unconnected vertices
@@ -445,7 +447,16 @@ function cleanoutput(t::Array{Int,2}, v::Array{Float64,2}, tmid::Array{Int,1})
             t[i,:] = nn[t[i,:]];
         end
     end
+    # these are the material IDs
     tmid = ntmid[1:k-1];
+    # Are there any duplicated tetrahedra? Here is how that can happen: consider
+    # to tetrahedra that share a face. Tetrahedron 1, a,b,c,d, and tetrahedron
+    # 2, a,c,b,e. Let us consider the face a,b,c to be in the x-y plane. Now
+    # collapse the edge d,e. This will lead to those 2 tetrahedra becoming one. 
+    # 
+    uti = MeshModificationModule._myunique2index(t)
+    t = t[uti, 1:4]
+    tmid = tmid[uti]
     return t, v, tmid
 end
 

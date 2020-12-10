@@ -455,7 +455,7 @@ function test()
     fes = FESetT4(t)
     setlabel!(fes, tmid)
     #println("count(fes) = $(count(fes))")
-    @test abs(count(fes) - 15253) / 15253 <= 0.004
+    @test abs(count(fes) - 14831) / 14831 <= 0.004
 
     # bfes = meshboundary(fes)
     # list = selectelem(fens, fes; overlappingbox = boundingbox([0.2018 2.1537 3.9064]), inflate = 0.01, allin = false)
@@ -525,7 +525,7 @@ function test()
     t, v, tmid = coarsen(t, v, tmid; bv = bv, desired_ts = desired_ts);
 
     # println("Mesh size: final = $(size(t,1)) [$(time() - t0) sec]")
-    @test size(t,1) == 75102
+    @test size(t,1) == 74635
 
     fens.xyz = deepcopy(v)
     fes = fromarray!(fes, t)
