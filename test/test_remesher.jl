@@ -41,7 +41,7 @@ function test()
     setlabel!(fes, tmid)
     vtkexportmesh("sample.vtk", fens, fes);
 
-    @test length(tmid) == 4954
+    @test length(tmid) == 4747
 
 end
 end
