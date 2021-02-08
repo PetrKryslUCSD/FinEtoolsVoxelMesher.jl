@@ -61,9 +61,10 @@ jobs:
           julia --project=docs -e '
             import Pkg; Pkg.add("Documenter")
             using Documenter: doctest
+            Pkg.add("FinEtools")
             using FinEtoolsVoxelMesher
-            doctest(FinEtoolsVoxelMesher)' 
-      - run: julia --project=docs docs/make.jl
+            doctest(FinEtoolsVoxelMesher)
+            docs/make.jl' 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
