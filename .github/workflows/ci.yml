@@ -58,10 +58,7 @@ jobs:
             Pkg.develop(path=pwd())
             Pkg.instantiate() 
             Pkg.add("Documenter")
-            using Documenter: doctest
-            Pkg.add("FinEtools")
-            using FinEtoolsVoxelMesher
-            doctest(FinEtoolsVoxelMesher)
+            using Documenter
             include("docs/make.jl")' 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
