@@ -10,6 +10,7 @@ for basic operations on finite element meshes. `FinEtoolsVoxelMesher` uses `FinE
 
 ## News
 
+- 02/08/2021: Updated dependencies for Julia 1.6 and FinEtools 5.0.
 - 12/08/2020: The coarsening now handles multi-material domains.
 - 01/23/2020: Dependencies have been updated to work with Julia 1.3.1.
 
