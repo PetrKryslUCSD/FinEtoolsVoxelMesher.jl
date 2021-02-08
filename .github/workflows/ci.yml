@@ -61,6 +61,7 @@ jobs:
           julia --project=docs -e '
             import Pkg; Pkg.add("Documenter")
             using Documenter: doctest
+            import Pkg; Pkg.add("FinEtools")
             using FinEtoolsVoxelMesher
             doctest(FinEtoolsVoxelMesher)' 
       - run: julia --project=docs docs/make.jl
