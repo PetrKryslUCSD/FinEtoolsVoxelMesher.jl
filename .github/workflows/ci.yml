@@ -55,7 +55,7 @@ jobs:
       - run: |
           julia --project=docs -e '
             import Pkg; 
-            Pkg.develop(PackageSpec(path=pwd()))
+            pkg"develop $(pwd())"
             Pkg.instantiate() 
             Pkg.add("Documenter")
             using Documenter: doctest
