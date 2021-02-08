@@ -455,7 +455,7 @@ function test()
     fes = FESetT4(t)
     setlabel!(fes, tmid)
     #println("count(fes) = $(count(fes))")
-    @test abs(count(fes) - 14831) / 14831 <= 0.004
+    @test abs(count(fes) - 14831) / 14831 <= 0.007
 
     # bfes = meshboundary(fes)
     # list = selectelem(fens, fes; overlappingbox = boundingbox([0.2018 2.1537 3.9064]), inflate = 0.01, allin = false)
