@@ -54,9 +54,10 @@ jobs:
           version: '^1.6.0-0'
       - run: |
           julia --project=docs -e '
+            import Pkg; 
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate() 
-            import Pkg; Pkg.add("Documenter")
+            Pkg.add("Documenter")
             using Documenter: doctest
             Pkg.add("FinEtools")
             using FinEtoolsVoxelMesher
