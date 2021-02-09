@@ -4,4 +4,4 @@ Issues and ideas:
 -- Documenter:
 using FinEtoolsVoxelMesher
 using DocumenterTools
-Travis.genkeys(user="PetrKryslUCSD", repo="https://github.com/PetrKryslUCSD/FinEtoolsVoxelMesher.jl")
+DocumenterTools.genkeys(user="PetrKryslUCSD", repo="https://github.com/PetrKryslUCSD/FinEtoolsVoxelMesher.jl")
