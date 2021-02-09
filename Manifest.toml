@@ -23,9 +23,9 @@ version = "3.8.0+0"
 
 [[ArrayInterface]]
 deps = ["IfElse", "LinearAlgebra", "Requires", "SparseArrays"]
-git-tree-sha1 = "ef151adaf3858cec632b7830616a3bb8201035dc"
+git-tree-sha1 = "ee07ae00e3cc277dcfa5507ce25be522313ecc3e"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "3.1.0"
+version = "3.1.1"
 
 [[Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -288,9 +288,9 @@ uuid = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [[ThreadingUtilities]]
 deps = ["VectorizationBase"]
-git-tree-sha1 = "3c54661cfaf797049995cacb8eaa4bc41a764b3e"
+git-tree-sha1 = "e3032c97b183e6e2baf4d2cc4fe60c4292a4a707"
 uuid = "8290d209-cae3-49c0-8002-c8c24d57dab5"
-version = "0.2.4"
+version = "0.2.5"
 
 [[TranscodingStreams]]
 deps = ["Random", "Test"]
