@@ -1,7 +1,7 @@
 name = "FinEtoolsVoxelMesher"
 uuid = "508a6b02-8bde-11e9-1a67-e1104bdc04c9"
 authors = ["Petr Krysl <pkrysl@ucsd.edu>"]
-version = "1.0.1"
+version = "1.0.2"
 
 [deps]
 FinEtools = "91bb5406-6c9a-523d-811d-0644c4229550"
