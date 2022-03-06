@@ -64,7 +64,7 @@ function evaluateweights(self::Remesher)
     return vertex_weight;
 end
 
-function coarsenvolume!(self::Remesher, desired_element_size::FFlt)
+function coarsenvolume!(self::Remesher, desired_element_size::FFlt, edge_length_ratio::FFlt = 1.0)
     vertex_weight = evaluateweights(self)
     utmid  = unique(self.tmid)
     for i in utmid
@@ -74,7 +74,7 @@ function coarsenvolume!(self::Remesher, desired_element_size::FFlt)
             vertex_weight[av] = Inf
         end
     end
-    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; desired_ts = desired_element_size, vertex_weight = vertex_weight);
+    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; desired_ts = desired_element_size, vertex_weight = vertex_weight, edge_length_ratio = edge_length_ratio);
     return self;
 end
 
@@ -84,7 +84,7 @@ function _t4boundary(t)
     return bdryconn;
 end
 
-function coarsensurface!(self::Remesher, desired_element_size::FFlt)
+function coarsensurface!(self::Remesher, desired_element_size::FFlt, edge_length_ratio::FFlt = 1.0)
     vertex_weight = evaluateweights(self)
     utmid  = unique(self.tmid)
     bv = fill(true, size(self.v, 1))
@@ -93,7 +93,7 @@ function coarsensurface!(self::Remesher, desired_element_size::FFlt)
         bc = _t4boundary(t)
         bv[bc[:]] .= false
     end
-    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; bv = bv, desired_ts = desired_element_size, vertex_weight = vertex_weight);
+    self.t, self.v, self.tmid = coarsen(self.t, self.v, self.tmid; bv = bv, desired_ts = desired_element_size, vertex_weight = vertex_weight, edge_length_ratio = edge_length_ratio);
     return self;
 end
 
@@ -190,7 +190,7 @@ function smooth!(self::Remesher, npass::Int = 5)
 end
 
 """
-    remesh!(self::Remesher)
+    remesh!(self::Remesher, edge_length_ratio::FFlt = 1.0)
 
 Perform a remeshing step.
 
@@ -199,13 +199,19 @@ is performed. The current element size (`self.currentelementsize`) is used. So
 don't forget to update the current elements size for the next iteration of the
 re-meshing algorithm.
 
+- `edge_length_ratio` = the largest allowed ratio of the lengths of the longest
+  and the shortest edge length in the tetrahedron to be produced by coarsening
+  (default 1.0). If this is supplied as greater than 1.0, for instance 2.0,
+  extra long spikey tetrahedra are prevented.
+
+
 After meshing, the vertices, tetrahedra, and material identifiers,  can be
 retrieved as `t, v, tmid = meshdata(remesher)`.
 """
-function remesh!(self::Remesher)
-    coarsensurface!(self, sqrt(1.0)*self.currentelementsize)
+function remesh!(self::Remesher, edge_length_ratio::FFlt = 1.0)
+    coarsensurface!(self, sqrt(1.0)*self.currentelementsize, edge_length_ratio)
     #smooth!(self);
-    coarsenvolume!(self, sqrt(2.0)*self.currentelementsize);
+    coarsenvolume!(self, sqrt(2.0)*self.currentelementsize, edge_length_ratio);
     smooth!(self);
     return self
 end

@@ -123,7 +123,7 @@ Coarsen a T4 (tetrahedral) mesh.
 # Output
 `t`, `v`, `tmid` = new arrays for the coarsened grid
 """
-function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int}; bv::Vector{Bool} = Bool[], desired_ts::Number = 0.0, stretch::Number = 1.25, nblayer::Int = 1, surface_coarsening::Bool = false, preserve_thin::Bool = false, vertex_weight::Vector{Float64} = Float64[], reportprogress::F = n -> nothing) where {F<:Function}
+function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int}; bv::Vector{Bool} = Bool[], desired_ts::Number = 0.0, stretch::Number = 1.25, nblayer::Int = 1, surface_coarsening::Bool = false, preserve_thin::Bool = false, vertex_weight::Vector{Float64} = Float64[], edge_length_ratio = 1.0, reportprogress::F = n -> nothing) where {F<:Function}
     vt = deepcopy(transpose(inputv))  # Better locality of data can be achieved with vertex coordinates in columns
     nv = size(inputv, 1)
     vlayer = Int[]
@@ -138,6 +138,7 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
     e = T4meshedges(t);
     m = FENodeToFEMap(e, nv)
     v2e = deepcopy(m.map);# Map vertex to edge
+    edge_length_ratio_squared = edge_length_ratio^2
 
     # Figure out the  vertex layer numbers which are the guides to coarsening
     if (isempty(vlayer))
@@ -241,7 +242,7 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
             selist = sortedelist!(selist, elayer, es, desiredes, availe);
             Change =  false;
             for i=1:length(selist)
-                if (collapseedge!(e, es, elayer, vlayer, t, vt, v2t, v2e, vertex_weight, selist[i]))
+                if collapseedge!(e, es, elayer, vlayer, t, vt, v2t, v2e, vertex_weight, selist[i], edge_length_ratio_squared)
                     Change = true;  break;
                 end
                 everfailed[selist[i]] = true; # the collapse failed for this edge
@@ -258,13 +259,20 @@ function coarsen(t::Array{Int, 2}, inputv::Array{Float64, 2}, tmid::Vector{Int};
     return cleanoutput(t,deepcopy(transpose(vt)),tmid);
 end
 
-function collapseedge!(e::Array{Int, 2}, es::Vector{Float64}, elayer::Vector{Int}, vlayer::Vector{Int}, t::Array{Int, 2}, vt::AbstractArray{Float64, 2}, v2t::Vector{Vector{FInt}}, v2e::Vector{Vector{FInt}}, vertex_weight::Vector{Float64}, dei::Int)
+function collapseedge!(e::Array{Int, 2}, es::Vector{Float64}, elayer::Vector{Int}, vlayer::Vector{Int}, t::Array{Int, 2}, vt::AbstractArray{Float64, 2}, v2t::Vector{Vector{FInt}}, v2e::Vector{Vector{FInt}}, vertex_weight::Vector{Float64}, dei::Int, edge_length_ratio_squared)
     result = false;
+    # if the operation would result in excessive stretching of an edge, cancel it
+    if edge_length_ratio_squared != 1.0
+        de1, de2 = e[dei, 1], e[dei, 2];
+        if _anyedgetoolong(t, v2t[de2], vt, de2, de1, edge_length_ratio_squared)
+            return false; # the collapse failed
+        end
+    end
     # if the operation would result in inverted tetrahedra, cancel it
     de1, de2 = e[dei, 1], e[dei, 2];
-    if anynegvol1(t, v2t[de2], vt, de2, de1)
+    if _anynegvol1(t, v2t[de2], vt, de2, de1)
         de1, de2 = de2, de1;# Try the edge the other way
-        if anynegvol1(t, v2t[de2], vt, de2, de1)
+        if _anynegvol1(t, v2t[de2], vt, de2, de1)
             return false; # the collapse failed
         end
     end
@@ -377,7 +385,7 @@ function availelist!(availe::_IntegerBuffer, selist::_IntegerBuffer, elayer::Vec
     return copyto!(availe, trim!(selist, min(length(selist), maxnt))), newcurrvlayer
 end
 
-function anynegvol1(t::Array{Int,2}, whichtets::Vector{Int}, vt::AbstractArray{Float64,2}, whichv::Int, otherv::Int)
+function _anynegvol1(t::Array{Int,2}, whichtets::Vector{Int}, vt::AbstractArray{Float64,2}, whichv::Int, otherv::Int)
     for iS1 in whichtets
         i1, i2, i3, i4 = t[iS1,:]; # nodes of the tetrahedron
         if (i1 == whichv)
@@ -398,6 +406,76 @@ function anynegvol1(t::Array{Int,2}, whichtets::Vector{Int}, vt::AbstractArray{F
     end
     return false;
 end
+
+function _anyedgetoolong(t::Array{Int,2}, whichtets::Vector{Int}, vt::AbstractArray{Float64,2}, whichv::Int, otherv::Int, edge_length_ratio_squared)
+    for iS1 in whichtets
+        i1, i2, i3, i4 = t[iS1,:]; # nodes of the tetrahedron
+        if (i1 == whichv)
+            i1 = otherv
+        end
+        if (i2 == whichv)
+            i2 = otherv
+        end
+        if (i3 == whichv)
+            i3 = otherv
+        end
+        if (i4 == whichv)
+            i4 = otherv
+        end
+        if !(i1 == i2 || i2 == i3 || i1 == i3 || i2 == i4 || i1 == i4 || i4 == i3)
+            # only if all vertices are distinct
+            ls = _tsqedgelengths(vt[:,i1], vt[:,i2], vt[:,i3], vt[:,i4])
+            minl = min(ls...)
+            maxl = max(ls...)
+            if maxl > edge_length_ratio_squared * minl
+                return true
+            end
+        end
+    end
+    return false;
+end
+
+
+function _tsqedgelengths(vi1::FFltVec, vi2::FFltVec, vi3::FFltVec, vi4::FFltVec)
+    @inbounds LA = let
+        A1 = vi2[1]-vi1[1];
+        A2 = vi2[2]-vi1[2];
+        A3 = vi2[3]-vi1[3];
+        A1^2 + A2^2 + A3^2
+    end
+    @inbounds LB = let
+        A1 = vi2[1]-vi3[1];
+        A2 = vi2[2]-vi3[2];
+        A3 = vi2[3]-vi3[3];
+        A1^2 + A2^2 + A3^2
+    end
+    @inbounds LC = let
+        A1 = vi1[1]-vi3[1];
+        A2 = vi1[2]-vi3[2];
+        A3 = vi1[3]-vi3[3];
+        A1^2 + A2^2 + A3^2
+    end
+    @inbounds LD = let
+        A1 = vi1[1]-vi4[1];
+        A2 = vi1[2]-vi4[2];
+        A3 = vi1[3]-vi4[3];
+        A1^2 + A2^2 + A3^2
+    end
+    @inbounds LE = let
+        A1 = vi2[1]-vi4[1];
+        A2 = vi2[2]-vi4[2];
+        A3 = vi2[3]-vi4[3];
+        A1^2 + A2^2 + A3^2
+    end
+    @inbounds LF = let
+        A1 = vi3[1]-vi4[1];
+        A2 = vi3[2]-vi4[2];
+        A3 = vi3[3]-vi4[3];
+        A1^2 + A2^2 + A3^2
+    end
+    return LA, LB, LC, LD, LE, LF
+end
+
 
 function cleanoutput(t::Array{Int,2}, v::Array{Float64,2}, tmid::Array{Int,1})
     nn = zeros(Int, size(v,1));
