@@ -267,11 +267,14 @@ end
     threshold!(V::VoxelBoxVolume, threshold_value, voxel_below, voxel_above)
 
 Threshold the data.
+
+The data is set to `voxel_below` if the data is below or equal to
+`threshold_value`; otherwise it is set to `voxel_above`.
 """
 function threshold!(V::VoxelBoxVolume, threshold_value, voxel_below, voxel_above)
-    for k= 1:size(V, 3)
-        for j= 1:size(V, 2)
-            for i= 1:size(V, 1)
+    for k in 1:size(V, 3)
+        for j in 1:size(V, 2)
+            for i in 1:size(V, 1)
                 if V.data[i,j,k] > threshold_value
                     V.data[i,j,k] = voxel_above
                 else
