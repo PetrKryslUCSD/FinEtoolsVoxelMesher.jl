@@ -1,3 +1,35 @@
+module mvvoxelm01
+using FinEtools
+using FinEtoolsVoxelMesher
+using Test
+function test()
+    V = VoxelBoxVolume(Int, 15*[5,6,7], [4.0, 4.0, 5.0])
+
+    s1 = solidsphere((1.5, 2.0, 2.0), 1.3)
+    s2 = solidsphere((1.5, 1.0, 2.0), 1.3)
+    fillsolid!(V, differenceop(s1, s2), 1)
+
+    @test (voxeldims(V) .≈ (0.05333333333333334, 0.044444444444444446, 0.047619047619047616)) == (true, true, true)
+    @test size(V) == (75, 90, 105)
+
+    File = "mvvoxelm01.vtk"
+    vtkexport(File, V)
+    # @async run(`"paraview.exe" $File`)
+    # try rm(File) catch end
+
+
+    resample!(V, 5/15)
+
+    @test (voxeldims(V) .≈ 15/5 .* (0.05333333333333334, 0.044444444444444446, 0.047619047619047616)) == (true, true, true)
+    @test size(V) == (75, 90, 105) ./ (15/5)
+
+    # @test (V.data[15,13,12]==0)
+    # @test (V.data[15,16,15]==1)
+end
+end
+using .mvvoxelm01
+mvvoxelm01.test()
+
 module mmmvvoxelmm1
 using FinEtools
 using FinEtoolsVoxelMesher
@@ -194,10 +226,10 @@ function test()
     raw = zeros(UInt8, 13, 14, 15)
     V = VoxelBoxVolume(raw, [4.0, 4.0, 5.0])
     V.data[5:7, 2:13, 12:14] .= 1
-    Vt = trim(V, 0)
+    Vt = trim!(V, 0)
     @test size(Vt) == (3, 12, 3)
     @test size(V, 3) == 15
-    Vtt = trim(Vt, 0)
+    Vtt = trim!(Vt, 0)
     @test size(Vtt) == (3, 12, 3)
 
     File = "mmmvvoxelmm8.vtk"
@@ -218,12 +250,12 @@ function test()
     fill!(raw, 2)
     V = VoxelBoxVolume(raw, [4.0, 4.0, 5.0])
     V.data[5:7, 2:13, 12:14] .= 1
-    Vt = trim(V, 2)
-    Vp = pad(Vt, (4, 6), (1, 1), (11, 1), 0)
+    Vt = trim!(V, 2)
+    Vp = pad!(Vt, (4, 6), (1, 1), (11, 1), 0)
     @test size(V) == size(Vp)
     @test size(Vt) == (3, 12, 3)
     @test size(V, 3) == 15
-    Vtt = trim(Vt, 0)
+    Vtt = trim!(Vt, 0)
     @test size(Vtt) == (3, 12, 3)
 
     # File = "mmmvvoxelmm9.vtk"
@@ -284,7 +316,7 @@ function test()
     end
 
     threshold_value, voxel_below, voxel_above = 20, 1, 0
-    V = threshold(V, threshold_value, voxel_below, voxel_above)
+    V = threshold!(V, threshold_value, voxel_below, voxel_above)
 
     # File = "mvoxelmm13.vtk"
     # vtkexport(File, V)

@@ -7,7 +7,9 @@ FinEtools.jl .
 """
 module VoxelBoxModule
 
+using Images
 import Base.size
+using FinEtools.BoxModule
 
 mutable struct VoxelBoxVolume{CoordT<:Number,DataT<:Number}
     origin::Array{CoordT,1}
@@ -34,12 +36,23 @@ function VoxelBoxVolume(data::Array{DataT,3}, boxdim::Array{CoordT,1})  where {C
     return V
 end
 
+"""
+    voxeldims(V::VoxelBoxVolume)
+
+Compute the dimensions of the voxels.
+"""
 function voxeldims(V::VoxelBoxVolume)
     nx, ny, nz = size(V.data)
     voxszx=V.boxdim[1]/nx
     voxszy=V.boxdim[2]/ny
     voxszz=V.boxdim[3]/nz
     return (voxszx, voxszy, voxszz)
+end
+
+function box(V::VoxelBoxVolume)
+    b = initbox!([], V.origin)
+    updatebox!(b, V.origin .+ V.boxdim)
+    return b
 end
 
 size(V::VoxelBoxVolume, which) = size(V.data, which)
@@ -137,13 +150,11 @@ function solidcylinder(center::Tuple{CoordT, CoordT, CoordT},
 end
 
 """
-    fillsolid!(V::VoxelBoxVolume,
-        f::SolidCF, fillvalue::DataT) where {DataT<:Number}
+    fillsolid!(V::VoxelBoxVolume, f::SolidCF, fillvalue::DataT) where {DataT<:Number}
 
 Filled a solid using a solid characteristic function.
 """
-function fillsolid!(V::VoxelBoxVolume,
-    f::SolidCF, fillvalue::DataT) where {DataT<:Number}
+function fillsolid!(V::VoxelBoxVolume, f::SolidCF, fillvalue::DataT) where {DataT<:Number}
     nx, ny, nz = size(V.data)
     voxszx=V.boxdim[1]/nx
     voxszy=V.boxdim[2]/ny
@@ -174,11 +185,11 @@ function fillvolume!(V::VoxelBoxVolume, fillvalue::DataT) where {DataT<:Number}
 end
 
 """
-    trim(V::VoxelBoxVolume, emptyvalue)
+    trim!(V::VoxelBoxVolume, emptyvalue)
 
 Trim off pieces of the volume that consist only of the empty value.
 """
-function trim(V::VoxelBoxVolume, emptyvalue)
+function trim!(V::VoxelBoxVolume, emptyvalue)
     emptyvalue = convert(eltype(V.data[1]), emptyvalue)
     function sliceisempty(slice, emptyvalue)
         for jx = 1:size(slice, 2)
@@ -237,11 +248,11 @@ function trim(V::VoxelBoxVolume, emptyvalue)
 end
 
 """
-    pad(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
+    pad!(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
 
 Pad voxel box with a constant value.
 """
-function pad(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
+function pad!(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
     # Adjust the number of pixels
     originalvoxeldims = voxeldims(V)
     data = zeros(eltype(V.data[1]), size(V) .+ (sum(ipad), sum(jpad), sum(kpad)))
@@ -253,11 +264,11 @@ function pad(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
 end
 
 """
-    threshold(V, threshold_value, voxel_below, voxel_above)
+    threshold!(V::VoxelBoxVolume, threshold_value, voxel_below, voxel_above)
 
 Threshold the data.
 """
-function threshold(V, threshold_value, voxel_below, voxel_above)
+function threshold!(V::VoxelBoxVolume, threshold_value, voxel_below, voxel_above)
     for k= 1:size(V, 3)
         for j= 1:size(V, 2)
             for i= 1:size(V, 1)
@@ -269,6 +280,21 @@ function threshold(V, threshold_value, voxel_below, voxel_above)
             end
         end
     end
+    return V
+end
+
+"""
+    resample!(V::VoxelBoxVolume, resize_ratio)
+
+Resize the voxel box.
+
+- `resize_ratio` = if less than one, the voxel will become bigger
+  (subsampling); otherwise the voxels will shrink (super sampling). 
+"""
+function resample!(V::VoxelBoxVolume, resize_ratio)
+    originalvoxeldims = voxeldims(V)
+    V.data = imresize(V.data, ratio = resize_ratio)
+    V.boxdim .= size(V.data) .* originalvoxeldims ./ resize_ratio
     return V
 end
 

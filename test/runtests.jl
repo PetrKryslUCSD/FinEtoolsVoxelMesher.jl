@@ -1,6 +1,6 @@
 using Test
 
+@time @testset "Voxel Box" begin include("test_voxel_box.jl") end
 @time @testset "Remeshing" begin include("test_remesher.jl") end
-@time @testset "Meshing" begin include("test_voxel_box.jl") end
 
 true
