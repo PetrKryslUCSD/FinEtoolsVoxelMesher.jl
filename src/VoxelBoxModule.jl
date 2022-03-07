@@ -293,7 +293,12 @@ Resize the voxel box.
 """
 function resample!(V::VoxelBoxVolume, resize_ratio)
     originalvoxeldims = voxeldims(V)
-    V.data = imresize(V.data, ratio = resize_ratio)
+    i =  imresize(V.data, ratio = resize_ratio) 
+    try
+        V.data = convert.(eltype(V.data), i)
+    catch
+        V.data = convert.(eltype(V.data), round.(i))
+    end
     V.boxdim .= size(V.data) .* originalvoxeldims ./ resize_ratio
     return V
 end
