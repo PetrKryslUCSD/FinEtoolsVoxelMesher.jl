@@ -251,7 +251,7 @@ function test()
     V = VoxelBoxVolume(raw, [4.0, 4.0, 5.0])
     V.data[5:7, 2:13, 12:14] .= 1
     Vt = trim!(V, 2)
-    Vp = pad!(Vt, (4, 6), (1, 1), (11, 1), 0)
+    Vp = pad(Vt, (4, 6), (1, 1), (11, 1), 0)
     @test size(V) == size(Vp)
     @test size(Vt) == (3, 12, 3)
     @test size(V, 3) == 15

@@ -248,11 +248,13 @@ function trim!(V::VoxelBoxVolume, emptyvalue)
 end
 
 """
-    pad!(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
+    pad(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
 
 Pad voxel box with a constant value.
+
+New box is returned.
 """
-function pad!(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
+function pad(V::VoxelBoxVolume, ipad, jpad, kpad, padvalue)
     # Adjust the number of pixels
     originalvoxeldims = voxeldims(V)
     data = zeros(eltype(V.data[1]), size(V) .+ (sum(ipad), sum(jpad), sum(kpad)))
