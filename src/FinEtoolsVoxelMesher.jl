@@ -15,11 +15,11 @@ include("VoxelTetMeshingModule.jl")
 
 # Exports follow:
 
-using FinEtoolsVoxelMesher.VoxelBoxModule: VoxelBoxVolume, voxeldims, size, fillvolume!, fillsolid!,  intersectionop, unionop, complementop, differenceop,  solidsphere, solidhalfspace, solidbox, solidcylinder, trim!, pad, threshold!, resample!, vtkexport
+using FinEtoolsVoxelMesher.VoxelBoxModule: VoxelBoxVolume, voxeldims, size, fillvolume!, fillsolid!,  intersectionop, unionop, complementop, differenceop,  solidsphere, solidhalfspace, solidbox, solidcylinder, trim!, pad, threshold!, resample!, vtkexport, boundingbox, solidellipsoid
 # Exported: type for voxel-box data structure, query methods
-export VoxelBoxVolume, voxeldims, size
+export VoxelBoxVolume, voxeldims, size, boundingbox
 # Exported: methods to set voxel values to generate geometry
-export fillvolume!, fillsolid!,  intersectionop, unionop, complementop,differenceop,  solidsphere, solidhalfspace, solidbox, solidcylinder
+export fillvolume!, fillsolid!,  intersectionop, unionop, complementop, differenceop,  solidsphere, solidhalfspace, solidbox, solidcylinder, solidellipsoid
 # Exported: methods for  manipulation and visualization  of voxel boxes
 export trim!, pad, threshold!, resample!, vtkexport
 

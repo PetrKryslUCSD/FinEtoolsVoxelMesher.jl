@@ -49,7 +49,7 @@ function voxeldims(V::VoxelBoxVolume)
     return (voxszx, voxszy, voxszz)
 end
 
-function box(V::VoxelBoxVolume)
+function boundingbox(V::VoxelBoxVolume)
     b = initbox!([], V.origin)
     updatebox!(b, V.origin .+ V.boxdim)
     return b
@@ -101,6 +101,15 @@ Solid sphere.
 """
 function solidsphere(center::Tuple{CoordT, CoordT, CoordT}, r::CoordT) where {CoordT<:Number}
     return SolidCF((x, y, z) -> (r*r - ((x-center[1])^2+(y-center[2])^2+(z-center[3])^2) >= 0.0))
+end
+
+"""
+    solidellipsoid(center::Tuple{CoordT, CoordT, CoordT}, a::CoordT, b::CoordT, c::CoordT) where {CoordT<:Number}
+
+Solid ellipsoid.
+"""
+function solidellipsoid(center::Tuple{CoordT, CoordT, CoordT}, a::CoordT, b::CoordT, c::CoordT) where {CoordT<:Number}
+    return SolidCF((x, y, z) -> (1 - ((x-center[1])^2/a^2 + (y-center[2])^2/b^2 + (z-center[3])^2/c^2) >= 0.0))
 end
 
 """

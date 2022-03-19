@@ -1,3 +1,35 @@
+module mvvoxelm01x1
+using FinEtools
+using FinEtoolsVoxelMesher
+using Test
+function test()
+    V = VoxelBoxVolume(Int, 15*[5,6,7], [4.0, 4.0, 5.0])
+
+    s1 = solidellipsoid((1.5, 2.0, 2.0), 1.3, 0.7, 0.4)
+    s2 = solidsphere((1.5, 1.0, 2.0), 1.3)
+    fillsolid!(V, differenceop(s1, s2), 1)
+
+    @test (voxeldims(V) .≈ (0.05333333333333334, 0.044444444444444446, 0.047619047619047616)) == (true, true, true)
+    @test size(V) == (75, 90, 105)
+
+    File = "mvvoxelm01x1.vtk"
+    vtkexport(File, V)
+    # @async run(`"paraview.exe" $File`)
+    # try rm(File) catch end
+
+
+    # resample!(V, 5/15)
+
+    # @test (voxeldims(V) .≈ 15/5 .* (0.05333333333333334, 0.044444444444444446, 0.047619047619047616)) == (true, true, true)
+    # @test size(V) == (75, 90, 105) ./ (15/5)
+
+    # @test (V.data[15,13,12]==0)
+    # @test (V.data[15,16,15]==1)
+end
+end
+using .mvvoxelm01x1
+mvvoxelm01x1.test()
+
 module mvvoxelm01
 using FinEtools
 using FinEtoolsVoxelMesher
