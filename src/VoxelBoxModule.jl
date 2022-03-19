@@ -10,6 +10,7 @@ module VoxelBoxModule
 using Images
 import Base.size
 using FinEtools.BoxModule
+import FinEtools.BoxModule: boundingbox
 
 mutable struct VoxelBoxVolume{CoordT<:Number,DataT<:Number}
     origin::Array{CoordT,1}
