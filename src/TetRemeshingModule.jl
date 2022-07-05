@@ -119,6 +119,10 @@ Coarsen a T4 (tetrahedral) mesh.
        In this way one may preserve certain edges by assigning  larger
        weight to their vertices. Default is `vertex_weight= []` (which means
        ignore the vertex weights)
+    + `edge_length_ratio` = the largest allowed ratio of the lengths of the
+       longest and the shortest edge length in the tetrahedron to be produced by
+       coarsening(default 1.0). If this is supplied as greater than 1.0, for
+       instance 2.0, extra long spikey tetrahedra are prevented.
 
 # Output
 `t`, `v`, `tmid` = new arrays for the coarsened grid
