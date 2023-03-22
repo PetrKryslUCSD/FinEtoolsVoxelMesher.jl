@@ -502,7 +502,7 @@ function cleanoutput(t::Array{Int,2}, v::Array{Float64,2}, tmid::Array{Int,1})
         if (t[i,1] != 0)# not deleted
             if (!isempty(findall(p -> p == 0, nn[t[i,:]])))
                 # error('Referring to deleted vertex')
-                t[i,:] = 0;
+                t[i,:] .= 0;
             else
                 j =nn[t[i,:]]
                 nt[k,:]=j;
