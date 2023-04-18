@@ -1,7 +1,7 @@
 name = "FinEtoolsVoxelMesher"
 uuid = "508a6b02-8bde-11e9-1a67-e1104bdc04c9"
 authors = ["Petr Krysl <pkrysl@ucsd.edu>"]
-version = "1.4.0"
+version = "1.4.1"
 
 [deps]
 FinEtools = "91bb5406-6c9a-523d-811d-0644c4229550"
@@ -9,19 +9,17 @@ Images = "916415d5-f1e6-5110-898d-aaa5f9f070e0"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 MappedArrays = "dbb5928d-eab1-5f90-85c2-b9b0edb7c900"
 NIfTI = "a3a9e032-41b5-5fc4-967a-a6b7a19844d3"
-Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 UnicodePlots = "b8865327-cd53-5732-bb35-84acbb429228"
 
 [compat]
-FinEtools = "^5"
+FinEtools = "^6"
+Images = "^0.25"
 MappedArrays = "^0.2"
 NIfTI = "^0.4"
 UnicodePlots = "^1.4"
-Images = "^0.25"                                                                                                                                                              
-Revise = "^3.3"        
-julia = "^1.7"                                                                                                                                                          
+julia = "^1.7"
 
 [extras]
 CPUSummary = "2a0fbf3d-bb9c-48f3-b0a9-814d99fd7ab9"
