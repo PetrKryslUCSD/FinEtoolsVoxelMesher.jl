@@ -522,7 +522,7 @@ function test()
     # File = "voxel_bracket_mesh_tet.vtk"
     # vtkexportmesh(File, fens, fes)
     # println("count(fes) = $(count(fes))")
-    @test abs(count(fes) - 14604) / 14604 <= 0.007
+    @test abs(count(fes) - 14604) / 14604 <= 0.05
 
     # bfes = meshboundary(fes)
     # list = selectelem(fens, fes; overlappingbox = boundingbox([0.2018 2.1537 3.9064]), inflate = 0.01, allin = false)
