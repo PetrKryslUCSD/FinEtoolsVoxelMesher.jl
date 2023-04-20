@@ -41,7 +41,7 @@ function test()
     setlabel!(fes, tmid)
     vtkexportmesh("sample1.vtk", fens, fes);
 
-    @test length(tmid) == 4774 # is this what we get with 1.6?
+    @test abs(length(tmid) - 4774) / length(tmid) < 0.02
     #@test length(tmid) == 4954 # with 1.5.3
     true
 end
@@ -92,7 +92,7 @@ function test()
     setlabel!(fes, tmid)
     vtkexportmesh("sample2.vtk", fens, fes);
 @show length(tmid)
-    @test length(tmid)  == 6459
+    @test abs(length(tmid) - 6459) / length(tmid) < 0.02
     true
 end
 end
