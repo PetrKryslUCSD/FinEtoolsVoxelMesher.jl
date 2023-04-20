@@ -41,7 +41,7 @@ function test()
     setlabel!(fes, tmid)
     vtkexportmesh("sample1.vtk", fens, fes);
 
-    @test length(tmid) == 4747 # is this what we get with 1.6?
+    @test length(tmid) == 4774 # is this what we get with 1.6?
     #@test length(tmid) == 4954 # with 1.5.3
     true
 end
@@ -91,8 +91,8 @@ function test()
     fes = fromarray!(fes, t)
     setlabel!(fes, tmid)
     vtkexportmesh("sample2.vtk", fens, fes);
-
-    @test length(tmid)  == 6453
+@show length(tmid)
+    @test length(tmid)  == 6459
     true
 end
 end

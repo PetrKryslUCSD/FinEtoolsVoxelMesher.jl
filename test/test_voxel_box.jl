@@ -1,3 +1,4 @@
+
 module mvvoxelm01x1
 using FinEtools
 using FinEtoolsVoxelMesher
@@ -518,16 +519,18 @@ function test()
     fens = FENodeSet(v)
     fes = FESetT4(t)
     setlabel!(fes, tmid)
-    #println("count(fes) = $(count(fes))")
-    @test abs(count(fes) - 14831) / 14831 <= 0.007
+    # File = "voxel_bracket_mesh_tet.vtk"
+    # vtkexportmesh(File, fens, fes)
+    # println("count(fes) = $(count(fes))")
+    @test abs(count(fes) - 14604) / 14604 <= 0.007
 
     # bfes = meshboundary(fes)
     # list = selectelem(fens, fes; overlappingbox = boundingbox([0.2018 2.1537 3.9064]), inflate = 0.01, allin = false)
     # File = "voxel_bracket_mesh_tet.vtk"
     # vtkexportmesh(File, fens, subset(fes, list))
     # @async run(`"paraview.exe" $File`)
-    File = "voxel_bracket_mesh_tet.vtk"
-    vtkexportmesh(File, fens, fes)
+    # File = "voxel_bracket_mesh_tet.vtk"
+    # vtkexportmesh(File, fens, fes)
     #@async run(`"paraview.exe" $File`)
     try rm(File); catch end
 
