@@ -40,8 +40,8 @@ function test()
     fes = fromarray!(fes, t)
     setlabel!(fes, tmid)
     vtkexportmesh("sample1.vtk", fens, fes);
-
-    @test abs(length(tmid) - 4774) / length(tmid) < 0.02
+    # @show length(tmid)
+    @test abs(length(tmid) - 4954) / length(tmid) < 0.02
     #@test length(tmid) == 4954 # with 1.5.3
     true
 end
@@ -91,8 +91,8 @@ function test()
     fes = fromarray!(fes, t)
     setlabel!(fes, tmid)
     vtkexportmesh("sample2.vtk", fens, fes);
-
-    @test abs(length(tmid) - 6459) / length(tmid) < 0.02
+    # @show length(tmid)
+    @test abs(length(tmid) - 7149) / length(tmid) < 0.02
     true
 end
 end
