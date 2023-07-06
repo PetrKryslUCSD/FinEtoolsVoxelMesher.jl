@@ -4,7 +4,7 @@
 [![Latest documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://petrkryslucsd.github.io/FinEtoolsVoxelMesher.jl/latest)
 [![Codebase Graph](https://img.shields.io/badge/Codebase-graph-green.svg)](https://octo-repo-visualization.vercel.app/?repo=PetrKryslUCSD/FinEtoolsVoxelMesher.jl)
 
-# FinEtoolsVoxelMesher: Meshing of geometries defined as voxel volumes
+# FinEtoolsVoxelMesher: Meshing of voxel volumes
 
 
 [`FinEtools`](https://github.com/PetrKryslUCSD/FinEtools.jl.git) is a package
