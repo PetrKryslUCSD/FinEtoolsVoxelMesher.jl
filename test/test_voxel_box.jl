@@ -1,3 +1,98 @@
+module mrremeshing3
+using FinEtools
+using FinEtools.MeshExportModule
+using FinEtoolsVoxelMesher
+using FinEtoolsVoxelMesher.TetRemeshingModule: coarsen
+using Test
+function test()
+    L= 0.3;
+    W = 0.3;
+    a = 0.15;
+    nL=46; nW=46; na=36;
+
+    fens,fes = T4block(a,L,W,nL,nW,na,:a);
+    t = Int64.(connasarray(fes));
+    v = Float64.(deepcopy(fens.xyz));
+    tmid = ones(Int64, size(t,1));
+
+    desired_ts = Float64(a);
+    bfes = meshboundary(fes);
+    f = connectednodes(bfes);
+    bv = zeros(Bool, size(v,1));
+    bv[f] .= true;
+
+    # println("Mesh size: initial = $(size(t,1))")
+    t0 = time()
+
+    t, v, tmid = coarsen(t, v, tmid; bv = bv, desired_ts = desired_ts);
+
+    # println("Mesh size: final = $(size(t,1)) [$(time() - t0) sec]")
+    @test size(t,1) == 74635
+
+    fens.xyz = deepcopy(v)
+    fes = fromarray!(fes, t)
+    setlabel!(fes, tmid)
+    geom  =  NodalField(fens.xyz)
+
+    femm  =  FEMMBase(IntegDomain(fes, SimplexRule(3, 1)))
+    V = integratefunction(femm, geom, (x) ->  1.0)
+    # println("V = $(V) compared to $(L * W * a)")
+    @test abs(V - L * W * a)/V < 1.0e-3
+    # File = "test1.vtk"
+    # MeshExportModule.vtkexportmesh(File, t, v, MeshExportModule.T4)
+    # @async run(`"paraview.exe" $File`)
+end
+end
+using .mrremeshing3
+mrremeshing3.test()
+
+module mrremeshing2
+using FinEtools
+using FinEtools.MeshExportModule
+using FinEtoolsVoxelMesher
+using FinEtoolsVoxelMesher.TetRemeshingModule: coarsen
+using Test
+function test()
+    L= 0.3;
+    W = 0.3;
+    a = 0.15;
+    nL=46; nW=46; na=36;
+
+    fens,fes = T4block(a,L,W,nL,nW,na,:a);
+    t = Int32.(connasarray(fes));
+    v = Float32.(deepcopy(fens.xyz));
+    tmid = ones(Int32, size(t,1));
+
+    desired_ts = Float32(a);
+    bfes = meshboundary(fes);
+    f = connectednodes(bfes);
+    bv = zeros(Bool, size(v,1));
+    bv[f] .= true;
+
+    # println("Mesh size: initial = $(size(t,1))")
+    t0 = time()
+
+    t, v, tmid = coarsen(t, v, tmid; bv = bv, desired_ts = desired_ts);
+
+    # println("Mesh size: final = $(size(t,1)) [$(time() - t0) sec]")
+    @test size(t,1) == 74179
+
+    fens.xyz = deepcopy(v)
+    fes = fromarray!(fes, t)
+    setlabel!(fes, tmid)
+    geom  =  NodalField(fens.xyz)
+
+    femm  =  FEMMBase(IntegDomain(fes, SimplexRule(3, 1)))
+    V = integratefunction(femm, geom, (x) ->  1.0)
+    # println("V = $(V) compared to $(L * W * a)")
+    @test abs(V - L * W * a)/V < 1.0e-3
+    File = "test1.vtk"
+    # MeshExportModule.VTK.vtkexportmesh(File, t, v, MeshExportModule.VTK.T4)
+    # @async run(`"paraview.exe" $File`)
+end
+end
+using .mrremeshing2
+mrremeshing2.test()
 
 module mvvoxelm01x1
 using FinEtools
